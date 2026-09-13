@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="image.ppg" alt="Превью проекта">
+  <img src="image.png" alt="Превью проекта">
 </p>
 
 
