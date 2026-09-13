@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 import Quickshell
 
 // Таймер проливов для гунфу-чаепития: белый чай / шу пуэр / шэн пуэр.
@@ -133,6 +134,7 @@ Item {
     property int teaIndex: 0
     property int steepIndex: 0
     property bool strong: false
+    property bool showCalc: false
     readonly property var tea: teas[teaIndex]
     readonly property var steep: tea.steeps[Math.min(steepIndex, tea.steeps.length - 1)]
     readonly property int steepTime: strong ? Math.round(steep.time * strongMultiplier) : steep.time
@@ -151,6 +153,25 @@ Item {
         return m > 0 ? `${m}:${sec < 10 ? "0" : ""}${sec}` : `${sec}s`
     }
 
+    // Соотношение чай/вода — чисто справочное число (г на 100мл), таймер сам
+    // от него ничего не пересчитывает: гунфу-норма обычно ~5-7г/100мл.
+    function parseNum(s) {
+        const v = parseFloat(String(s).replace(",", "."))
+        return isFinite(v) && v > 0 ? v : 0
+    }
+
+    readonly property real gramsVal: parseNum(gramsField.text)
+    readonly property real mlVal: parseNum(mlField.text)
+    readonly property real ratio: (gramsVal > 0 && mlVal > 0) ? (gramsVal / mlVal * 100) : 0
+
+    function ratioLabel() {
+        if (ratio <= 0) return "укажи вес и объём"
+        const r = ratio.toFixed(1)
+        if (ratio < 4) return `${r} г/100мл — слабо`
+        if (ratio < 8) return `${r} г/100мл — гунфу-норма`
+        return `${r} г/100мл — очень крепко`
+    }
+
     implicitWidth: column.implicitWidth
     implicitHeight: column.implicitHeight
 
@@ -165,21 +186,19 @@ Item {
             }
 
             root.remaining = 0
+            root.running = false
             const finishedSteep = root.steepIndex + 1
             const hasNext = root.steepIndex < root.tea.steeps.length - 1
 
-            if (hasNext) {
-                root.steepIndex += 1 // сбрасывает remaining/running через onSteepTimeChanged
-                root.running = true // ...и сразу продолжаем на следующем проливе
-            } else {
-                root.running = false
-            }
+            // Переключаем на следующий пролив, но не запускаем сам —
+            // onSteepTimeChanged уже сбросил remaining/running; ждём "старт".
+            if (hasNext) root.steepIndex += 1
 
             Quickshell.execDetached([
                 "notify-send", "-a", "чай",
                 hasNext ? "Пролив готов" : "Последний пролив готов",
                 `${root.tea.name} · пролив ${finishedSteep}${root.strong ? " · крепко" : ""}`
-                    + (hasNext ? ` → пролив ${finishedSteep + 1}` : ""),
+                    + (hasNext ? ` → пролив ${finishedSteep + 1}, жду старта` : ""),
             ])
         }
     }
@@ -302,6 +321,74 @@ Item {
                     root.running = false
                     root.remaining = root.steepTime
                 }
+            }
+
+            FlatButton {
+                text: "г/мл"
+                highlighted: root.showCalc
+                onClicked: root.showCalc = !root.showCalc
+            }
+        }
+
+        ColumnLayout {
+            visible: root.showCalc
+            Layout.alignment: Qt.AlignHCenter
+            spacing: 4
+
+            RowLayout {
+                Layout.alignment: Qt.AlignHCenter
+                spacing: 6
+
+                TextField {
+                    id: gramsField
+                    Layout.preferredWidth: 50
+                    horizontalAlignment: Text.AlignHCenter
+                    placeholderText: "г"
+                    placeholderTextColor: "#808080"
+                    color: Theme.fg
+                    font.pixelSize: Theme.smallFontSize
+                    font.family: Theme.fontFamily
+                    validator: RegularExpressionValidator { regularExpression: /[0-9]{0,3}([.,][0-9]{0,1})?/ }
+                    background: Rectangle { color: Theme.track; radius: 6 }
+                }
+
+                Text {
+                    text: "г  /"
+                    color: Theme.fg
+                    opacity: Theme.dim
+                    font.pixelSize: Theme.smallFontSize
+                    font.family: Theme.fontFamily
+                }
+
+                TextField {
+                    id: mlField
+                    Layout.preferredWidth: 50
+                    horizontalAlignment: Text.AlignHCenter
+                    placeholderText: "мл"
+                    placeholderTextColor: "#808080"
+                    color: Theme.fg
+                    font.pixelSize: Theme.smallFontSize
+                    font.family: Theme.fontFamily
+                    validator: RegularExpressionValidator { regularExpression: /[0-9]{0,4}/ }
+                    background: Rectangle { color: Theme.track; radius: 6 }
+                }
+
+                Text {
+                    text: "мл"
+                    color: Theme.fg
+                    opacity: Theme.dim
+                    font.pixelSize: Theme.smallFontSize
+                    font.family: Theme.fontFamily
+                }
+            }
+
+            Text {
+                Layout.alignment: Qt.AlignHCenter
+                text: root.ratioLabel()
+                color: Theme.fg
+                opacity: Theme.dim
+                font.pixelSize: Theme.smallFontSize
+                font.family: Theme.fontFamily
             }
         }
     }
