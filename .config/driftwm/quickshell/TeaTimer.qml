@@ -11,12 +11,29 @@ Item {
     id: root
 
     readonly property real strongMultiplier: 2.0
+    readonly property int maxSteeps: 20
+
+    // Продолжает вручную расписанные проливы до maxSteeps: время растёт
+    // (лист слабеет — нужно дольше держать воду), вкус/эффект дальше уже не
+    // расписаны заранее, поэтому идут общие затухающие формулировки по кругу.
+    function extend(base) {
+        const fadeNote = ["мягче, но ещё живой", "лёгкий, тает", "почти прозрачный, тонкий отголосок", "едва уловимый, ещё сладкий", "почти вода, лёгкая память вкуса"]
+        const fadeEffect = ["эффект стихает, спокойствие", "лёгкое послевкусие энергии", "почти нейтрально", "тишина, лёгкий отголосок ци", "почти вода, покой"]
+        const result = base.slice()
+        let time = base[base.length - 1].time
+        for (let i = base.length; i < root.maxSteeps; i++) {
+            time = Math.min(240, Math.round(time * 1.35))
+            const j = i - base.length
+            result.push({ time: time, note: fadeNote[j % fadeNote.length], effect: fadeEffect[j % fadeEffect.length] })
+        }
+        return result
+    }
 
     readonly property var teas: [
         {
             key: "white",
             name: "белый",
-            steeps: [
+            steeps: root.extend([
                 { time: 10, note: "лёгкий, цветочный", effect: "лёгкая бодрость, чистый ум" },
                 { time: 15, note: "мягкая сладость", effect: "мягкое тепло, расслабление" },
                 { time: 20, note: "мёд, пик цветочности", effect: "ровная бодрость без нервозности" },
@@ -25,12 +42,12 @@ Item {
                 { time: 50, note: "лёгкая древесность, спокойствие", effect: "спокойствие, почти без стимуляции" },
                 { time: 70, note: "тонкий, но сладкий", effect: "едва заметный эффект, умиротворение" },
                 { time: 100, note: "почти прозрачный, мягкая энергия", effect: "почти нейтрально, лёгкость" },
-            ],
+            ]),
         },
         {
             key: "shu",
             name: "шу пуэр",
-            steeps: [
+            steeps: root.extend([
                 { time: 5, note: "споласкивание — этот слить", effect: "споласкивание — этот слить" },
                 { time: 8, note: "гладкий, землистый", effect: "тепло в теле, мягкое пищеварение" },
                 { time: 10, note: "глубокая землистость, сладкое дерево", effect: "заземляющее тепло, спокойная бодрость" },
@@ -39,12 +56,12 @@ Item {
                 { time: 20, note: "мягкая землистая сладость", effect: "мягкое тепло держится долго" },
                 { time: 30, note: "уютный, согревает, помогает пищеварению", effect: "глубокое спокойствие после еды" },
                 { time: 45, note: "лёгкое послевкусие, расслабление", effect: "лёгкое тепло, сонное умиротворение" },
-            ],
+            ]),
         },
         {
             key: "sheng",
             name: "шэн пуэр",
-            steeps: [
+            steeps: root.extend([
                 { time: 5, note: "споласкивание — этот слить", effect: "споласкивание — этот слить" },
                 { time: 8, note: "травянистый, яркий, немного вяжет", effect: "лёгкая бодрость, чистота в голове" },
                 { time: 10, note: "овощной, бодрит", effect: "заметная бодрость, слюноотделение" },
@@ -53,12 +70,12 @@ Item {
                 { time: 20, note: "слаще, мягче, долгий хуэйгань", effect: "энергия ровнее, приятная эйфория" },
                 { time: 30, note: "мягкий, медовый, спокойная бодрость", effect: "спокойная бодрость, долгий хуэйгань" },
                 { time: 45, note: "лёгкое сладкое послевкусие", effect: "лёгкий отголосок энергии, ясность" },
-            ],
+            ]),
         },
         {
             key: "gaba",
             name: "габа",
-            steeps: [
+            steeps: root.extend([
                 { time: 10, note: "кисло-сливовый, плотный", effect: "лёгкое расслабление" },
                 { time: 12, note: "тёмный фрукт, лёгкая кислинка", effect: "мягкое успокоение, без сонливости" },
                 { time: 15, note: "насыщенный, чернослив", effect: "спокойный фокус" },
@@ -67,12 +84,12 @@ Item {
                 { time: 35, note: "бархатистый, долгое послевкусие", effect: "спокойствие, лёгкая теплота" },
                 { time: 50, note: "лёгкий, фруктовый шлейф", effect: "едва уловимый эффект, покой" },
                 { time: 75, note: "почти прозрачный, мягкая кислинка", effect: "почти нейтрально, лёгкий покой" },
-            ],
+            ]),
         },
         {
             key: "darkoolong",
             name: "тёмный улун",
-            steeps: [
+            steeps: root.extend([
                 { time: 10, note: "обжаренный, минеральный", effect: "тепло в теле, бодрость" },
                 { time: 12, note: "тёмный шоколад, орех", effect: "заземляющее тепло" },
                 { time: 15, note: "насыщенный, дымный", effect: "спокойная концентрация" },
@@ -81,12 +98,12 @@ Item {
                 { time: 35, note: "древесный, тёплый", effect: "глубокое спокойствие" },
                 { time: 50, note: "лёгкий, ореховый шлейф", effect: "лёгкое тепло, умиротворение" },
                 { time: 75, note: "почти прозрачный, тёплая нота", effect: "почти нейтрально, лёгкое тепло" },
-            ],
+            ]),
         },
         {
             key: "lightoolong",
             name: "светлый улун",
-            steeps: [
+            steeps: root.extend([
                 { time: 8, note: "цветочный, орхидея", effect: "лёгкая свежая бодрость" },
                 { time: 10, note: "сливочный, свежий", effect: "ясность в голове" },
                 { time: 12, note: "пик цветочности, нежный", effect: "приятная лёгкая эйфория" },
@@ -95,12 +112,12 @@ Item {
                 { time: 30, note: "травянистый шлейф", effect: "спокойная ясность" },
                 { time: 45, note: "лёгкий, едва сладкий", effect: "едва заметная бодрость" },
                 { time: 65, note: "почти прозрачный, воздушный", effect: "почти нейтрально, лёгкость" },
-            ],
+            ]),
         },
         {
             key: "heicha",
             name: "хэй ча",
-            steeps: [
+            steeps: root.extend([
                 { time: 5, note: "споласкивание — этот слить", effect: "споласкивание — этот слить" },
                 { time: 8, note: "землистый, ореховый", effect: "тепло в теле" },
                 { time: 10, note: "древесный, лёгкая сладость", effect: "заземление, спокойствие" },
@@ -109,7 +126,7 @@ Item {
                 { time: 20, note: "мягкая землистость", effect: "мягкое спокойствие" },
                 { time: 30, note: "уютный, согревающий", effect: "согревает, помогает пищеварению" },
                 { time: 45, note: "лёгкое послевкусие", effect: "лёгкое сонное тепло" },
-            ],
+            ]),
         },
     ]
 
@@ -144,15 +161,26 @@ Item {
         onTriggered: {
             if (root.remaining > 1) {
                 root.remaining -= 1
-            } else {
-                root.remaining = 0
-                root.running = false
-                Quickshell.execDetached([
-                    "notify-send", "-a", "чай",
-                    "Пролив готов",
-                    `${root.tea.name} · пролив ${root.steepIndex + 1}${root.strong ? " · крепко" : ""}`,
-                ])
+                return
             }
+
+            root.remaining = 0
+            const finishedSteep = root.steepIndex + 1
+            const hasNext = root.steepIndex < root.tea.steeps.length - 1
+
+            if (hasNext) {
+                root.steepIndex += 1 // сбрасывает remaining/running через onSteepTimeChanged
+                root.running = true // ...и сразу продолжаем на следующем проливе
+            } else {
+                root.running = false
+            }
+
+            Quickshell.execDetached([
+                "notify-send", "-a", "чай",
+                hasNext ? "Пролив готов" : "Последний пролив готов",
+                `${root.tea.name} · пролив ${finishedSteep}${root.strong ? " · крепко" : ""}`
+                    + (hasNext ? ` → пролив ${finishedSteep + 1}` : ""),
+            ])
         }
     }
 
