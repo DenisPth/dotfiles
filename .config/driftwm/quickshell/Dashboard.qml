@@ -27,6 +27,7 @@ PanelWindow {
 
     ColumnLayout {
         id: content
+        clip: true
         anchors {
             left: parent.left
             right: parent.right
