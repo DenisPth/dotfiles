@@ -137,7 +137,7 @@ Item {
     property bool showCalc: false
     readonly property var tea: teas[teaIndex]
     readonly property var steep: tea.steeps[Math.min(steepIndex, tea.steeps.length - 1)]
-    readonly property int steepTime: strong ? Math.round(steep.time * strongMultiplier) : steep.time
+    readonly property int steepTime: Math.round(steep.time * (strong ? strongMultiplier : 1) * ratioMultiplier)
 
     property int remaining: steepTime
     property bool running: false
@@ -153,8 +153,11 @@ Item {
         return m > 0 ? `${m}:${sec < 10 ? "0" : ""}${sec}` : `${sec}s`
     }
 
-    // Соотношение чай/вода — чисто справочное число (г на 100мл), таймер сам
-    // от него ничего не пересчитывает: гунфу-норма обычно ~5-7г/100мл.
+    // Соотношение чай/вода двигает время пролива относительно гунфу-нормы:
+    // больше листа на тот же объём — экстракция быстрее, значит короче пролив,
+    // и наоборот. Множитель ограничен снизу/сверху, чтобы совсем крайние вводы
+    // (1г на 500мл и т.п.) не улетали в абсурд.
+    readonly property real standardRatio: 6.0 // г/100мл — опорная точка для времён выше
     function parseNum(s) {
         const v = parseFloat(String(s).replace(",", "."))
         return isFinite(v) && v > 0 ? v : 0
@@ -163,13 +166,15 @@ Item {
     readonly property real gramsVal: parseNum(gramsField.text)
     readonly property real mlVal: parseNum(mlField.text)
     readonly property real ratio: (gramsVal > 0 && mlVal > 0) ? (gramsVal / mlVal * 100) : 0
+    readonly property real ratioMultiplier: ratio > 0 ? Math.max(0.5, Math.min(3.0, standardRatio / ratio)) : 1.0
 
     function ratioLabel() {
-        if (ratio <= 0) return "укажи вес и объём"
+        if (ratio <= 0) return "укажи вес и объём — время проливов подстроится"
         const r = ratio.toFixed(1)
-        if (ratio < 4) return `${r} г/100мл — слабо`
-        if (ratio < 8) return `${r} г/100мл — гунфу-норма`
-        return `${r} г/100мл — очень крепко`
+        const mult = `×${ratioMultiplier.toFixed(2)} к времени`
+        if (ratio < 4) return `${r} г/100мл — слабо, ${mult}`
+        if (ratio < 8) return `${r} г/100мл — гунфу-норма, ${mult}`
+        return `${r} г/100мл — очень крепко, ${mult}`
     }
 
     implicitWidth: column.implicitWidth
