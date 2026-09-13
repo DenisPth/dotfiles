@@ -96,6 +96,8 @@ PanelWindow {
 
         AppLauncher { Layout.alignment: Qt.AlignHCenter }
 
+        TeaTimer { Layout.alignment: Qt.AlignHCenter }
+
         Tray { Layout.leftMargin: footer.x + notifications.padX }
 
         RowLayout {
