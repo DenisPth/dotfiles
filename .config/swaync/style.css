@@ -1,0 +1,59 @@
+/* ~/.config/swaync/style.css */
+
+* {
+  font-family: "Monocraft";
+}
+
+.control-center,
+.notification-row .notification-background {
+  background: #2b323c;
+  color: #c9c4ab;
+  border: 1px solid #4b5560;
+  border-radius: 8px;
+}
+
+.notification-row .notification-background .notification-default-action {
+  background: #2b323c;
+  color: #c9c4ab;
+}
+
+.notification-row .notification-background .notification-default-action:hover {
+  background: #333b45;
+}
+
+.notification-action-container button,
+.control-center .widget-buttons-grid button {
+  background: #333b45;
+  color: #c9c4ab;
+  border: 1px solid #4b5560;
+}
+
+.control-center .widget-buttons-grid button:hover {
+  background: #4b5560;
+}
+
+.notification-row .close-button {
+  background: #b5665f;
+  color: #2b323c;
+}
+
+.control-center .widget-title button {
+  background: #333b45;
+  color: #c9c4ab;
+}
+
+.control-center .widget-title label {
+  color: #c9c4ab;
+}
+
+.control-center slider {
+  background: #7089a0;
+}
+
+.control-center scale trough {
+  background: #333b45;
+}
+
+.control-center scale trough highlight {
+  background: #7089a0;
+}

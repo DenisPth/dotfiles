@@ -1,0 +1,62 @@
+{
+    "layer": "top",
+    "position": "top",
+    "mod": "dock",
+    "exclusive": true,
+    "passthrough": false,
+    "gtk-layer-shell": true,
+    "height": 38,
+    // driftwm — не Hyprland: у него нет дискретных workspace'ов (бесконечный
+    // канвас с камерой/зумом), поэтому вместо hyprland/workspaces и
+    // hyprland/window (которые тут молча ничего не показывали бы — нет
+    // hyprland-сокета) берём заголовок активного окна через нативный IPC
+    // driftwm (см. scripts/driftwm-window.sh).
+    "modules-left": ["custom/window"],
+    "modules-center": ["clock"],
+    "modules-right": ["network", "bluetooth", "pulseaudio", "battery", "tray"],
+
+    "custom/window": {
+        "exec": "~/.config/waybar/scripts/driftwm-window.sh",
+        "format": "{}",
+        "max-length": 40,
+        "tooltip": false
+    },
+
+    "clock": {
+        "format": "{:%H:%M  |  %A, %b %d}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    },
+
+    "pulseaudio": {
+        "format": "{volume}%",
+        "format-muted": "Muted",
+        "on-click": "pavucontrol"
+    },
+
+    "network": {
+        "format-wifi": "{essid}",
+        "format-ethernet": "{ifname}",
+        "format-disconnected": "Disconnected"
+    },
+
+    "bluetooth": {
+        "format": "{status}",
+        "format-disabled": "",
+        "format-connected": "{num_connections}"
+    },
+
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{capacity}%",
+        "format-charging": "{capacity}%",
+        "format-plugged": "{capacity}%"
+    },
+
+    "tray": {
+        "icon-size": 16,
+        "spacing": 10
+    }
+}

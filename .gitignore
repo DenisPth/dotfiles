@@ -1,0 +1,3 @@
+# Timestamped backups (driftwm's own auto-backup-on-save, and mine from this
+# session) — git is the history now, these are just noise.
+*.bak*

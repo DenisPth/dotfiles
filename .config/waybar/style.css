@@ -1,0 +1,79 @@
+/* ~/.config/waybar/style.css */
+
+* {
+    font-family: "Monocraft";
+    font-size: 13px;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+}
+
+window#waybar {
+    background-color: #2b323c;
+    color: #c9c4ab;
+    border-bottom: 1px solid #4b5560;
+}
+
+#workspaces button {
+padding: 0 8px;
+color: #8f8a72;
+background: transparent;
+}
+
+#workspaces button.active {
+color: #c9c4ab;
+background: #333b45;
+border-bottom: 2px solid #7089a0;
+}
+
+#workspaces button.urgent {
+color: #b5665f;
+}
+
+#clock,
+#network,
+#battery,
+#tray,
+#pulseaudio,
+#cpu,
+#memory,
+#backlight,
+#idle_inhibitor,
+#custom-notification,
+#custom-window {
+padding: 0 10px;
+color: #c9c4ab;
+}
+
+#custom-window {
+color: #8f8a72;
+}
+
+#battery.warning {
+color: #c9b98a;
+}
+
+#battery.critical {
+color: #b5665f;
+}
+
+#network.disconnected {
+color: #b5665f;
+}
+
+#pulseaudio.muted {
+color: #4b5560;
+}
+
+#tray > .needs-attention {
+background-color: #b5665f;
+}
+
+tooltip {
+    background-color: #2b323c;
+    border: 1px solid #4b5560;
+}
+
+tooltip label {
+    color: #c9c4ab;
+}

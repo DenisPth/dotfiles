@@ -1,0 +1,37 @@
+# Конфиг swaylock под стиль dark_sea (тот же, что у driftwm/foot/waybar)
+effect-blur=7x5
+fade-in=0.2
+
+# Сплошной цвет фона вместо картинки — обои driftwm это GLSL-шейдер
+# (dark_sea.glsl), а не файл, так что тут берём базовый тон той же палитры.
+color=2b323c
+
+font=Sans
+font-size=24
+
+inside-color=2b323caa
+inside-clear-color=333b45aa
+inside-ver-color=7089a0aa
+inside-wrong-color=b5665faa
+
+indicator-radius=100
+indicator-thickness=10
+
+line-use-label=true
+line-color=00000000
+line-clear-color=00000000
+line-ver-color=00000000
+line-wrong-color=00000000
+
+ring-color=4b5560ff
+ring-clear-color=7fa6a0ff
+ring-ver-color=8a9a7cff
+ring-wrong-color=b5665fff
+
+key-hl-color=c9c4abff
+bs-hl-color=b5665fff
+
+text-color=c9c4abff
+text-clear-color=c9c4abff
+text-ver-color=2b323cff
+text-wrong-color=2b323cff
