@@ -4,20 +4,29 @@ import Quickshell
 import Quickshell.Io
 
 // Wallpapers are GLSL shaders under wallpapers/ (see driftwm/config.toml's
-// [background] section). Picking one rewrites that section's `path = ` line
-// and asks driftwm to reload — driftwm auto-backs-up config.toml on its own
-// writes, so this doesn't need to (see .gitignore's *.bak* note).
+// [background] section) — nothing QtQuick can render directly, so the grid
+// shows pre-baked thumbnails (scripts/gen_wallpaper_thumbs.sh: briefly
+// switches through each one on the real screen and screenshots it, once).
+// Picking a tile rewrites [background]'s `path = ` line and asks driftwm to
+// reload — driftwm auto-backs-up config.toml on its own writes, so this
+// doesn't need to (see .gitignore's *.bak* note).
 ColumnLayout {
     id: root
-    spacing: 6
+    spacing: 8
 
     readonly property string base: Quickshell.env("HOME") + "/.config/driftwm/wallpapers"
+    readonly property string thumbDir: base + "/thumbs"
     property var wallpapers: []
     property string active: ""
 
+    Component.onCompleted: if (visible) { list.running = true; current.running = true }
     onVisibleChanged: if (visible) {
         list.running = true
         current.running = true
+    }
+
+    function thumbFor(rel) {
+        return thumbDir + "/" + rel.replace(/\//g, "_").replace(/\.glsl$/, ".png")
     }
 
     function apply(rel) {
@@ -49,25 +58,73 @@ ColumnLayout {
     Process { id: rewrite }
 
     Text {
-        text: "обои (dark_sea.glsl и варианты)"
+        text: "обои — клик применяет сразу"
         color: Theme.fg
         opacity: Theme.dim
         font.pixelSize: Theme.smallFontSize
         font.family: Theme.fontFamily
     }
 
-    ColumnLayout {
-        spacing: 2
+    Flickable {
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        clip: true
+        contentWidth: width
+        contentHeight: grid.implicitHeight
+        boundsBehavior: Flickable.StopAtBounds
 
-        Repeater {
-            model: root.wallpapers
+        Flow {
+            id: grid
+            width: parent.width
+            spacing: 10
 
-            ListRow {
-                required property string modelData
-                Layout.fillWidth: true
-                text: modelData
-                highlighted: modelData === root.active
-                onClicked: root.apply(modelData)
+            Repeater {
+                model: root.wallpapers
+
+                ColumnLayout {
+                    id: tile
+                    required property string modelData
+                    readonly property bool active: modelData === root.active
+                    width: 140
+                    spacing: 4
+
+                    Rectangle {
+                        Layout.preferredWidth: 140
+                        Layout.preferredHeight: 80
+                        radius: 8
+                        color: Theme.track
+                        border.color: tile.active ? Theme.fg : Theme.border
+                        border.width: tile.active ? 2 : 1
+                        clip: true
+
+                        Image {
+                            anchors.fill: parent
+                            anchors.margins: tile.active ? 2 : 1
+                            fillMode: Image.PreserveAspectCrop
+                            asynchronous: true
+                            source: "file://" + root.thumbFor(tile.modelData)
+                            onStatusChanged: if (status === Image.Error) visible = false
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.apply(tile.modelData)
+                        }
+                    }
+
+                    Text {
+                        Layout.preferredWidth: 140
+                        horizontalAlignment: Text.AlignHCenter
+                        elide: Text.ElideRight
+                        text: tile.modelData.split("/").pop().replace(/\.glsl$/, "")
+                        color: Theme.fg
+                        opacity: tile.active ? 1 : Theme.dim
+                        font.pixelSize: Theme.smallFontSize
+                        font.bold: tile.active
+                        font.family: Theme.fontFamily
+                    }
+                }
             }
         }
     }

@@ -13,6 +13,7 @@ ColumnLayout {
     property var modes: []
     property string current: ""
 
+    Component.onCompleted: if (visible) query.running = true
     onVisibleChanged: if (visible) query.running = true
 
     function label(m) {

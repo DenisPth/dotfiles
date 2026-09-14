@@ -26,17 +26,17 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
     color: "transparent"
     visible: false
-    implicitWidth: 560
-    implicitHeight: 460
+    implicitWidth: 640
+    implicitHeight: 480
 
     property string section: "wifi"
     readonly property var sections: [
         { key: "wifi", label: "wi-fi" },
         { key: "bluetooth", label: "bluetooth" },
         { key: "sound", label: "звук" },
-        { key: "power", label: "яркость и питание" },
-        { key: "display", label: "разрешение" },
-        { key: "appearance", label: "внешний вид" },
+        { key: "power", label: "питание" },
+        { key: "display", label: "экран" },
+        { key: "appearance", label: "обои" },
         { key: "keyboard", label: "раскладка" },
         { key: "about", label: "о системе" },
         { key: "updates", label: "обновления" },
@@ -63,14 +63,14 @@ PanelWindow {
         spacing: 16
 
         ColumnLayout {
-            Layout.preferredWidth: 130
+            Layout.preferredWidth: 140
             Layout.fillHeight: true
             spacing: 2
 
             Repeater {
                 model: root.sections
 
-                ListRow {
+                SidebarItem {
                     required property var modelData
                     Layout.fillWidth: true
                     text: modelData.label
@@ -82,6 +82,12 @@ PanelWindow {
             Item { Layout.fillHeight: true }
         }
 
+        Rectangle {
+            Layout.fillHeight: true
+            Layout.preferredWidth: 1
+            color: Theme.border
+        }
+
         ColumnLayout {
             id: content
             Layout.fillWidth: true
@@ -89,15 +95,15 @@ PanelWindow {
             Layout.alignment: Qt.AlignTop
             spacing: 8
 
-            WifiSection { visible: root.section === "wifi" }
-            BluetoothSection { visible: root.section === "bluetooth" }
-            SoundSection { visible: root.section === "sound" }
-            PowerSection { visible: root.section === "power" }
-            DisplaySection { visible: root.section === "display" }
-            AppearanceSection { visible: root.section === "appearance" }
-            KeyboardSection { visible: root.section === "keyboard" }
-            AboutSection { visible: root.section === "about" }
-            UpdatesSection { visible: root.section === "updates" }
+            WifiSection { Layout.fillWidth: true; visible: root.section === "wifi" }
+            BluetoothSection { Layout.fillWidth: true; visible: root.section === "bluetooth" }
+            SoundSection { Layout.fillWidth: true; visible: root.section === "sound" }
+            PowerSection { Layout.fillWidth: true; visible: root.section === "power" }
+            DisplaySection { Layout.fillWidth: true; visible: root.section === "display" }
+            AppearanceSection { Layout.fillWidth: true; Layout.fillHeight: true; visible: root.section === "appearance" }
+            KeyboardSection { Layout.fillWidth: true; visible: root.section === "keyboard" }
+            AboutSection { Layout.fillWidth: true; visible: root.section === "about" }
+            UpdatesSection { Layout.fillWidth: true; visible: root.section === "updates" }
         }
     }
 }

@@ -38,7 +38,9 @@ Tile {
             rescanQueued = rescanQueued || rescan
             return
         }
-        refresher.command = ["sh", "-c", `nmcli radio wifi; echo @@; nmcli -t -e no -f TYPE,STATE,DEVICE dev; echo @@; nmcli -t -e no -f TYPE,NAME con show; echo @@; nmcli -t -e no -f ACTIVE,SIGNAL,SECURITY,SSID dev wifi list --rescan ${rescan ? "yes" : "no"}`]
+        // LC_ALL=C: nmcli's ACTIVE column is localized ("да" under ru_RU),
+        // which broke matching it against "yes" in parse() below.
+        refresher.command = ["sh", "-c", `LC_ALL=C nmcli radio wifi; echo @@; LC_ALL=C nmcli -t -e no -f TYPE,STATE,DEVICE dev; echo @@; LC_ALL=C nmcli -t -e no -f TYPE,NAME con show; echo @@; LC_ALL=C nmcli -t -e no -f ACTIVE,SIGNAL,SECURITY,SSID dev wifi list --rescan ${rescan ? "yes" : "no"}`]
         refresher.running = true
     }
 

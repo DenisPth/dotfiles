@@ -27,6 +27,7 @@ PowerMenu 1.0 PowerMenu.qml
 PowerSection 1.0 PowerSection.qml
 Ram 1.0 Ram.qml
 Settings 1.0 Settings.qml
+SidebarItem 1.0 SidebarItem.qml
 SoundSection 1.0 SoundSection.qml
 ThinSlider 1.0 ThinSlider.qml
 TeaTimer 1.0 TeaTimer.qml

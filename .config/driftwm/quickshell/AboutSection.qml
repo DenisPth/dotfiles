@@ -16,6 +16,7 @@ ColumnLayout {
     property string driftwmVersion: ""
     property string qsVersion: ""
 
+    Component.onCompleted: if (visible) query.running = true
     onVisibleChanged: if (visible) query.running = true
 
     Process {

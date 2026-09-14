@@ -13,6 +13,7 @@ ColumnLayout {
     property bool checking: false
     readonly property string repo: Quickshell.env("HOME") + "/dotfiles"
 
+    Component.onCompleted: if (visible) check()
     onVisibleChanged: if (visible) check()
 
     function check() {

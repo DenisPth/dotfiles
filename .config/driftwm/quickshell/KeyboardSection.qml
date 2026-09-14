@@ -10,6 +10,7 @@ ColumnLayout {
 
     property string layout: "—"
 
+    Component.onCompleted: if (visible) query.running = true
     onVisibleChanged: if (visible) query.running = true
 
     Process {

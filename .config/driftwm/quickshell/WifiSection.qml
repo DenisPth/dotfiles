@@ -16,6 +16,10 @@ ColumnLayout {
     property string pending: ""
     property string error: ""
 
+    // `visible` starts true for the default section (wifi), so there's no
+    // false→true transition to catch on open — onCompleted covers that case,
+    // onVisibleChanged covers switching back to this tab later.
+    Component.onCompleted: if (visible) { poll.running = true; refresh(true) }
     onVisibleChanged: {
         pending = ""
         error = ""
@@ -23,8 +27,10 @@ ColumnLayout {
         if (visible) refresh(true)
     }
 
+    // LC_ALL=C: nmcli's ACTIVE column is "sí/да/…" under a non-English
+    // locale, which broke matching it against "yes" below.
     function refresh(rescan) {
-        refresher.command = ["sh", "-c", `nmcli radio wifi; echo @@; nmcli -t -e no -f TYPE,STATE,DEVICE dev; echo @@; nmcli -t -e no -f TYPE,NAME con show; echo @@; nmcli -t -e no -f ACTIVE,SIGNAL,SECURITY,SSID dev wifi list --rescan ${rescan ? "yes" : "no"}`]
+        refresher.command = ["sh", "-c", `LC_ALL=C nmcli radio wifi; echo @@; LC_ALL=C nmcli -t -e no -f TYPE,STATE,DEVICE dev; echo @@; LC_ALL=C nmcli -t -e no -f TYPE,NAME con show; echo @@; LC_ALL=C nmcli -t -e no -f ACTIVE,SIGNAL,SECURITY,SSID dev wifi list --rescan ${rescan ? "yes" : "no"}`]
         refresher.running = true
     }
 
