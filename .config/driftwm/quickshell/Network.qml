@@ -243,7 +243,7 @@ Tile {
                 Layout.fillWidth: true
                 echoMode: TextInput.Password
                 placeholderText: `password for ${root.pending}`
-                placeholderTextColor: "#808080"
+                placeholderTextColor: Theme.border
                 color: Theme.fg
                 font.pixelSize: Theme.fontSize
                 font.family: Theme.fontFamily

@@ -349,7 +349,7 @@ Item {
                     Layout.preferredWidth: 50
                     horizontalAlignment: Text.AlignHCenter
                     placeholderText: "г"
-                    placeholderTextColor: "#808080"
+                    placeholderTextColor: Theme.border
                     color: Theme.fg
                     font.pixelSize: Theme.smallFontSize
                     font.family: Theme.fontFamily
@@ -370,7 +370,7 @@ Item {
                     Layout.preferredWidth: 50
                     horizontalAlignment: Text.AlignHCenter
                     placeholderText: "мл"
-                    placeholderTextColor: "#808080"
+                    placeholderTextColor: Theme.border
                     color: Theme.fg
                     font.pixelSize: Theme.smallFontSize
                     font.family: Theme.fontFamily
