@@ -130,12 +130,13 @@ widget = true
 # Frosted glass look for the dashboard itself.
 blur = true
 
-# The settings window, toggled with mod+s. Off to the dashboard's right so
-# navigating to the origin (mod+arrow) shows both at once.
+# The settings window, toggled with mod+s. A real app window now (not a
+# canvas-pinned widget) — matched by title since it's a plain xdg-toplevel,
+# not a layer-shell surface with its own app_id-like namespace. It opens,
+# moves, and resizes like any other window; window_placement = "auto" (top
+# of this file) decides where it lands.
 [[window_rules]]
-app_id = "drift-settings"
-position = [500, 0]
-widget = true
+title = "Настройки"
 blur = true
 
 # Frost the terminals too, matching the transparency set in foot.ini/kitty.conf
