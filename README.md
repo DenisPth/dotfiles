@@ -22,9 +22,12 @@ overwritten. Edit the live config afterward and you're editing this repo.
 ## What's here
 
 - **driftwm** — compositor config, the quickshell home dashboard (clock,
-  battery/network/brightness/cpu/kbd/bluetooth/volume/ram/disk tiles, media
-  player, app launcher, tray), scripts (spotlight search, clipboard picker,
-  battery notifications).
+  weather, battery/network/brightness/cpu/kbd/bluetooth/volume/ram/disk
+  tiles, media player, app launcher, tea timer, pomodoro, notes, tray),
+  a GNOME-Settings-shaped window (`mod+s`: wi-fi, bluetooth, sound, brightness
+  & power, display resolution, wallpaper, keyboard layout, about, dotfiles
+  update check), scripts (spotlight search, clipboard picker, battery
+  notifications).
 - **waybar** — a `custom/window` module reads driftwm's own IPC
   (`driftwm msg subscribe`) for the focused window title, since driftwm has
   no Hyprland/Sway-style workspaces to hook a stock module into.

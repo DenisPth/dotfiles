@@ -1,16 +1,21 @@
 # A qmldir replaces the implicit directory import, so every type is listed.
 singleton Theme 1.0 Theme.qml
 singleton Popups 1.0 Popups.qml
+AboutSection 1.0 AboutSection.qml
 AppLauncher 1.0 AppLauncher.qml
+AppearanceSection 1.0 AppearanceSection.qml
 Battery 1.0 Battery.qml
 Bluetooth 1.0 Bluetooth.qml
+BluetoothSection 1.0 BluetoothSection.qml
 Brightness 1.0 Brightness.qml
 Clock 1.0 Clock.qml
 Cpu 1.0 Cpu.qml
 Dashboard 1.0 Dashboard.qml
 Disk 1.0 Disk.qml
+DisplaySection 1.0 DisplaySection.qml
 FlatButton 1.0 FlatButton.qml
 KbdLayout 1.0 KbdLayout.qml
+KeyboardSection 1.0 KeyboardSection.qml
 ListRow 1.0 ListRow.qml
 MonthView 1.0 MonthView.qml
 Mpris 1.0 Mpris.qml
@@ -19,10 +24,15 @@ Notes 1.0 Notes.qml
 Pomodoro 1.0 Pomodoro.qml
 Popover 1.0 Popover.qml
 PowerMenu 1.0 PowerMenu.qml
+PowerSection 1.0 PowerSection.qml
 Ram 1.0 Ram.qml
+Settings 1.0 Settings.qml
+SoundSection 1.0 SoundSection.qml
 ThinSlider 1.0 ThinSlider.qml
 TeaTimer 1.0 TeaTimer.qml
 Tile 1.0 Tile.qml
 Tray 1.0 Tray.qml
+UpdatesSection 1.0 UpdatesSection.qml
 Volume 1.0 Volume.qml
 Weather 1.0 Weather.qml
+WifiSection 1.0 WifiSection.qml

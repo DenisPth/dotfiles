@@ -3,4 +3,5 @@ import Quickshell
 
 ShellRoot {
     Dashboard {}
+    Settings {}
 }

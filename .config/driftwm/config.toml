@@ -109,6 +109,9 @@ remember_layout_per_window = true
 "mod+alt+shift+q" = "exec systemctl poweroff"
 "Super+L" = "exec swaylock"
 "mod + a" = "spawn zen-browser"
+# GNOME-Settings-style window (wifi/bluetooth/sound/etc) — toggled via
+# quickshell IPC since it's a window this same shell process already owns.
+"mod+s" = "exec qs -p ~/.config/driftwm/quickshell ipc call settings toggle"
 
 [mouse.on-window]
 "alt+middle" = "fill-window"
@@ -125,6 +128,14 @@ app_id = "drift-dashboard"
 position = [0, 0]
 widget = true
 # Frosted glass look for the dashboard itself.
+blur = true
+
+# The settings window, toggled with mod+s. Off to the dashboard's right so
+# navigating to the origin (mod+arrow) shows both at once.
+[[window_rules]]
+app_id = "drift-settings"
+position = [500, 0]
+widget = true
 blur = true
 
 # Frost the terminals too, matching the transparency set in foot.ini/kitty.conf
