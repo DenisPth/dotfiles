@@ -1,10 +1,12 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
+import Quickshell
 import Quickshell.Io
 
-// wttr.in auto-detects location from the machine's public IP — no city, no
-// API key, nothing to configure. Refreshed every 30 min; weather doesn't
-// need tighter polling than that, and it's a free service.
+// wttr.in geolocates by public IP when no location is set — fine normally,
+// but wrong behind a VPN. locationOverride, once set, is used verbatim and
+// persisted to weather_location.txt so it survives a restart.
 Tile {
     id: root
 
@@ -14,11 +16,23 @@ Tile {
     property string humidity: ""
     property string windKmph: ""
     property var forecast: []
+    property string locationOverride: ""
 
     label: "weather"
     value: "—"
     clickable: true
     onClicked: popover.toggle()
+
+    FileView {
+        id: locationFile
+        path: Quickshell.shellDir + "/weather_location.txt"
+        printErrors: false
+        onLoaded: {
+            root.locationOverride = text().trim()
+            fetch.running = true
+        }
+        onLoadFailed: fetch.running = true
+    }
 
     function parse(text) {
         let data
@@ -46,9 +60,18 @@ Tile {
         }))
     }
 
+    function setLocation(loc) {
+        root.locationOverride = loc
+        locationFile.setText(loc)
+        fetch.running = true
+    }
+
     Process {
         id: fetch
-        command: ["curl", "-s", "--max-time", "10", "wttr.in/?format=j1"]
+        command: {
+            const path = root.locationOverride ? encodeURIComponent(root.locationOverride) : ""
+            return ["curl", "-s", "--max-time", "10", `wttr.in/${path}?format=j1`]
+        }
         stdout: StdioCollector {
             onStreamFinished: root.parse(text)
         }
@@ -58,7 +81,6 @@ Tile {
         interval: 30 * 60 * 1000
         running: true
         repeat: true
-        triggeredOnStart: true
         onTriggered: fetch.running = true
     }
 
@@ -66,12 +88,31 @@ Tile {
         id: popover
         target: root
 
-        Text {
-            text: root.city || "…"
-            color: Theme.fg
-            font.pixelSize: Theme.fontSize
-            font.bold: true
-            font.family: Theme.fontFamily
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 6
+
+            Text {
+                Layout.fillWidth: true
+                text: root.city || "…"
+                color: Theme.fg
+                font.pixelSize: Theme.fontSize
+                font.bold: true
+                font.family: Theme.fontFamily
+            }
+
+            TextField {
+                id: locationField
+                Layout.preferredWidth: 100
+                text: root.locationOverride
+                placeholderText: "город"
+                placeholderTextColor: Theme.border
+                color: Theme.fg
+                font.pixelSize: Theme.smallFontSize
+                font.family: Theme.fontFamily
+                background: Rectangle { color: Theme.track; radius: 6 }
+                onAccepted: root.setLocation(text.trim())
+            }
         }
 
         Text {
