@@ -112,7 +112,6 @@ Name=Dark Sea
 Theme=Papirus-Dark
 
 [KDE]
-LookAndFeelPackage=Utterly-Nord
 contrast=4
 frameContrast=0.2
 
