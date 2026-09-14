@@ -40,6 +40,8 @@ PanelWindow {
 
         Clock { Layout.alignment: Qt.AlignHCenter }
 
+        Weather { Layout.alignment: Qt.AlignHCenter }
+
         // The tile block is centered with its column gap equal to the side
         // margins; the tray and the footer buttons' text line up with its edges.
         // Value columns are sized from the widest value a tile can show, not
@@ -98,6 +100,10 @@ PanelWindow {
         AppLauncher { Layout.alignment: Qt.AlignHCenter }
 
         TeaTimer { Layout.alignment: Qt.AlignHCenter }
+
+        Pomodoro { Layout.alignment: Qt.AlignHCenter }
+
+        Notes { Layout.alignment: Qt.AlignHCenter }
 
         Tray { Layout.leftMargin: footer.x + notifications.padX }
 

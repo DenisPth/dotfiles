@@ -10,6 +10,9 @@ Tile {
     property var previous: ({})
     property var threads: []
     property string load: ""
+    property string cpuTemp: "—"
+    property string gpuTemp: "—"
+    property string uptime: "—"
 
     label: "cpu"
     value: "—"
@@ -49,20 +52,69 @@ Tile {
         onLoaded: root.load = text().split(" ").slice(0, 3).join(" · ")
     }
 
+    FileView {
+        id: uptimeFile
+        path: "/proc/uptime"
+        onLoaded: root.uptime = root.fmtUptime(parseFloat(text().split(" ")[0]))
+    }
+
+    // Chip names carry a PCI address suffix (e.g. "k10temp-pci-00c3"); match
+    // by prefix so a different slot/kernel enumeration order doesn't break this.
+    function parseSensors(text) {
+        let data
+        try {
+            data = JSON.parse(text)
+        } catch (e) {
+            return
+        }
+        const cpuKey = Object.keys(data).find(k => k.startsWith("k10temp"))
+        const gpuKey = Object.keys(data).find(k => k.startsWith("amdgpu"))
+        const cpu = cpuKey && data[cpuKey].Tctl ? data[cpuKey].Tctl.temp1_input : null
+        const gpu = gpuKey && data[gpuKey].edge ? data[gpuKey].edge.temp1_input : null
+        root.cpuTemp = cpu != null ? `${Math.round(cpu)}°C` : "—"
+        root.gpuTemp = gpu != null ? `${Math.round(gpu)}°C` : "—"
+    }
+
+    function fmtUptime(seconds) {
+        const totalMin = Math.floor(seconds / 60)
+        const days = Math.floor(totalMin / 1440)
+        const hours = Math.floor((totalMin % 1440) / 60)
+        const mins = totalMin % 60
+        if (days > 0) return `${days}d ${hours}h`
+        if (hours > 0) return `${hours}h ${mins}m`
+        return `${mins}m`
+    }
+
+    Process {
+        id: sensors
+        command: ["sensors", "-j"]
+        stdout: StdioCollector {
+            onStreamFinished: root.parseSensors(text)
+        }
+    }
+
     Timer {
         interval: 2000
         running: true
         repeat: true
         onTriggered: {
             stat.reload()
-            if (popover.visible) loadavg.reload()
+            if (popover.visible) {
+                loadavg.reload()
+                uptimeFile.reload()
+                sensors.running = true
+            }
         }
     }
 
     Popover {
         id: popover
         target: root
-        onVisibleChanged: if (visible) loadavg.reload()
+        onVisibleChanged: if (visible) {
+            loadavg.reload()
+            uptimeFile.reload()
+            sensors.running = true
+        }
 
         GridLayout {
             columns: 4
@@ -87,6 +139,14 @@ Tile {
         Text {
             Layout.topMargin: 2
             text: `load ${root.load} (1, 5, 15 min)`
+            color: Theme.fg
+            opacity: Theme.dim
+            font.pixelSize: Theme.smallFontSize
+            font.family: Theme.fontFamily
+        }
+
+        Text {
+            text: `cpu ${root.cpuTemp} · gpu ${root.gpuTemp} · up ${root.uptime}`
             color: Theme.fg
             opacity: Theme.dim
             font.pixelSize: Theme.smallFontSize

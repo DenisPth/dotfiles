@@ -43,6 +43,7 @@ yay -S --needed --noconfirm \
     waybar kanshi swaync swayosd \
     foot kitty fuzzel cliphist wl-clipboard \
     cava btop fastfetch jq hyprshot swayidle swaylock \
+    curl lm_sensors \
     zsh-theme-powerlevel10k zsh-autosuggestions zsh-syntax-highlighting \
     papirus-icon-theme bibata-cursor-git
 

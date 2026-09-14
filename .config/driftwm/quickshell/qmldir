@@ -15,6 +15,8 @@ ListRow 1.0 ListRow.qml
 MonthView 1.0 MonthView.qml
 Mpris 1.0 Mpris.qml
 Network 1.0 Network.qml
+Notes 1.0 Notes.qml
+Pomodoro 1.0 Pomodoro.qml
 Popover 1.0 Popover.qml
 PowerMenu 1.0 PowerMenu.qml
 Ram 1.0 Ram.qml
@@ -23,3 +25,4 @@ TeaTimer 1.0 TeaTimer.qml
 Tile 1.0 Tile.qml
 Tray 1.0 Tray.qml
 Volume 1.0 Volume.qml
+Weather 1.0 Weather.qml
