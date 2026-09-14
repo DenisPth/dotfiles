@@ -31,14 +31,16 @@ overwritten. Edit the live config afterward and you're editing this repo.
 - **waybar** — a `custom/window` module reads driftwm's own IPC
   (`driftwm msg subscribe`) for the focused window title, since driftwm has
   no Hyprland/Sway-style workspaces to hook a stock module into.
-- **foot / kitty** — Monocraft, dark_sea 16-color palette.
+- **foot** (primary) **/ kitty** — Monocraft, dark_sea 16-color palette.
 - **fuzzel** — launcher + `mod+v` clipboard picker (cliphist), Papirus-Dark
   icons.
 - **swaync**, **swaylock**, **cava**, **btop**, **kanshi**, **GTK 3/4**,
   **kdeglobals/kcminputrc** (Bibata-Modern-Classic cursor, Papirus-Dark
   icons), **fastfetch**, **Zed** ("Dark Sea" theme).
-- **.zshrc / .p10k.zsh** — Powerlevel10k + autosuggestions + syntax
-  highlighting, dark_sea colors.
+- **.zshrc / .p10k.zsh** — Oh My Zsh (fetched by `install.sh`, not vendored
+  in this repo) + Powerlevel10k, autosuggestions and syntax highlighting
+  from system packages, ~18 OMZ plugins (git, sudo, extract, fzf, zoxide,
+  eza with icons in the dark_sea palette, …), dark_sea colors throughout.
 
 ## Font
 

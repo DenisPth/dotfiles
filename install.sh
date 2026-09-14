@@ -45,7 +45,20 @@ yay -S --needed --noconfirm \
     cava btop fastfetch jq hyprshot swayidle swaylock \
     curl lm_sensors imagemagick \
     zsh-theme-powerlevel10k zsh-autosuggestions zsh-syntax-highlighting \
+    eza zoxide pkgfile \
     papirus-icon-theme bibata-cursor-git
+
+echo "==> pkgfile database (powers the command-not-found zsh plugin)"
+sudo pkgfile --update
+sudo systemctl enable --now pkgfile-update.timer 2>/dev/null || true
+
+echo "==> Oh My Zsh (framework the plugins in .zshrc expect)"
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    RUNZSH=no CHSH=no KEEP_ZSHRC=yes \
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
+else
+    echo "  already installed, skipping"
+fi
 
 echo "==> Configs (symlinked from this repo, existing files backed up)"
 for d in driftwm waybar foot kitty fuzzel swaync swaylock cava btop kanshi \

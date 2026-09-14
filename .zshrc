@@ -1,27 +1,122 @@
-# Use powerline
-USE_POWERLINE="true"
-# Has weird character width
-HAS_WIDECHARS="false"
+# ~/.zshrc — dark_sea
 
-# Source manjaro-zsh-configuration
-if [[ -e /usr/share/zsh/manjaro-zsh-config ]]; then
-  source /usr/share/zsh/manjaro-zsh-config
-fi
-# Use manjaro zsh prompt
-if [[ -e /usr/share/zsh/manjaro-zsh-prompt ]]; then
-  source /usr/share/zsh/manjaro-zsh-prompt
-fi
+## Shell options (ex-manjaro-zsh-config; OMZ doesn't set these)
+setopt correct                # Auto correct mistakes
+setopt extendedglob           # Extended globbing — regex with *
+setopt nocaseglob             # Case insensitive globbing
+setopt rcexpandparam          # Array expansion with parameters
+setopt nocheckjobs            # Don't warn about running jobs on exit
+setopt numericglobsort        # Sort filenames numerically when it makes sense
+setopt nobeep
+setopt appendhistory
+setopt histignorealldups
+setopt autocd                 # A bare path cds into it
+setopt inc_append_history
+setopt histignorespace        # Leading-space commands are not saved
 
-# ПРИНУДИТЕЛЬНОЕ ЛЕЧЕНИЕ ОШИБКИ:
-autoload -Uz compinit
-compinit -i
+HISTFILE=~/.zhistory
+HISTSIZE=10000
+SAVEHIST=10000
+WORDCHARS=${WORDCHARS//\/[&.;]}
 
-# Подсветка синтаксиса — должна подключаться последней (после автоподсказок,
-# которые уже тянет manjaro-zsh-prompt), иначе виджеты друг другу мешают.
-if [[ -e /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
-  source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
+## Completion styling
+zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' rehash true
+zstyle ':completion:*' menu select
+zstyle ':completion:*' accept-exact '*(N)'
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path ~/.zsh/cache
+
+## Keybindings
+bindkey -e
+bindkey '^[[7~' beginning-of-line
+bindkey '^[[H'  beginning-of-line
+[[ -n "${terminfo[khome]}" ]] && bindkey "${terminfo[khome]}" beginning-of-line
+bindkey '^[[8~' end-of-line
+bindkey '^[[F'  end-of-line
+[[ -n "${terminfo[kend]}" ]] && bindkey "${terminfo[kend]}" end-of-line
+bindkey '^[[2~' overwrite-mode
+bindkey '^[[3~' delete-char
+bindkey '^[[C'  forward-char
+bindkey '^[[D'  backward-char
+bindkey '^[Oc' forward-word
+bindkey '^[Od' backward-word
+bindkey '^[[1;5D' backward-word
+bindkey '^[[1;5C' forward-word
+bindkey '^H' backward-kill-word        # ctrl+backspace: delete previous word
+bindkey '^[[Z' undo                    # shift+tab: undo
+
+## Aliases
+alias cp="cp -i"
+alias df='df -h'
+alias free='free -m'
+alias gitu='git add . && git commit && git push'
+
+## Colors — dircolors for completion lists (eza gets its own palette below)
+eval "$(dircolors -b)"
+
+# eza — file-type icons/colors matched to the dark_sea palette (same hues as
+# foot/kitty/waybar/kdeglobals). 38;2;r;g;b = truecolor.
+export EZA_COLORS="\
+di=38;2;112;137;160:\
+ln=38;2;127;166;160:\
+ex=38;2;138;154;124:\
+or=38;2;181;102;95:\
+pi=38;2;154;138;160:\
+so=38;2;201;185;138:\
+bd=38;2;75;85;96:\
+cd=38;2;75;85;96:\
+su=38;2;181;102;95:\
+sg=38;2;181;102;95:\
+tw=38;2;181;102;95:\
+ow=38;2;181;102;95"
+
+## Oh My Zsh
+export ZSH="$HOME/.oh-my-zsh"
+
+# eza plugin config (must precede the plugins= load below)
+zstyle ':omz:plugins:eza' 'dirs-first' yes
+zstyle ':omz:plugins:eza' 'icons' yes
+zstyle ':omz:plugins:eza' 'git-status' yes
+
+plugins=(
+    git                     # git aliases (gst, gco, gcb, gp, gl…)
+    sudo                    # Esc Esc: prepend sudo to the command
+    extract                 # x archive.tar.gz
+    colored-man-pages
+    command-not-found       # needs pkgfile
+    archlinux               # pacman/yay short aliases
+    dirhistory              # alt+←/→/↑ through directory history
+    copypath                # copy pwd/file path to the clipboard
+    copyfile                # copy a file's contents to the clipboard
+    web-search              # google "query"
+    jsontools               # pp_json, is_json…
+    encode64
+    urltools                # urlencode/urldecode
+    systemd                 # sc/scu/scr, jctl…
+    fzf                     # ctrl+r/ctrl+t/alt+c fuzzy widgets
+    eza                     # ls/ll/la… → eza, icons on
+    zoxide                  # z — frecency-based cd
+    history-substring-search
+)
+
+# Theme is Powerlevel10k, but from the system package (not an OMZ custom
+# theme) — loaded manually below, same as before this migration.
+ZSH_THEME=""
+
+source $ZSH/oh-my-zsh.sh
+
+# Autosuggestions + syntax highlighting — system packages, not OMZ plugins.
+# Syntax highlighting must load last, after everything else that defines
+# widgets (autosuggestions included), or the two fight over keybindings.
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#4b5560'
+[[ -e /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]] && \
+    source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+[[ -e /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] && \
+    source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Powerlevel10k — цвета под тему dark_sea (та же палитра, что у всей системы).
+[[ -e /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme ]] && \
+    source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
