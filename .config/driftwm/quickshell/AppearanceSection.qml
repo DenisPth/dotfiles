@@ -36,9 +36,14 @@ ColumnLayout {
         root.active = rel
     }
 
+    // A handful of the .glsl files (mirrored_parallax, ripple, and their
+    // textured/ copies) are templates that need a `texture = "~/Pictures/…"`
+    // line pointing at a photo — this picker only ever sets `path`, so
+    // applying one renders whatever an unset sampler happens to produce, not
+    // a usable wallpaper. Left out until there's a way to also pick a photo.
     Process {
         id: list
-        command: ["sh", "-c", `find "${root.base}" -name '*.glsl' | sort`]
+        command: ["sh", "-c", `find "${root.base}" -name '*.glsl' | xargs grep -L sampler2D | sort`]
         stdout: StdioCollector {
             onStreamFinished: root.wallpapers = text.trim().split("\n").filter(l => l).map(p => p.slice(root.base.length + 1))
         }

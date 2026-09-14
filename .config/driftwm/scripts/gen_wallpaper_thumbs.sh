@@ -25,7 +25,12 @@ command -v magick >/dev/null 2>&1 || { echo "error: imagemagick (magick) not fou
 mkdir -p "$THUMBS"
 original="$(grep '^path = ' "$CONFIG" | head -n1 | sed -E 's/^path = "(.*)"$/\1/')"
 
-find "$WALLPAPERS" -name '*.glsl' | sort | while IFS= read -r f; do
+# Skip the texture-template shaders (mirrored_parallax, ripple, and their
+# textured/ copies) — AppearanceSection.qml excludes them from the picker
+# too, since they need a `texture = "~/Pictures/…"` line this script has no
+# photo to fill in; without one they render whatever an unset sampler gives,
+# not their real look.
+find "$WALLPAPERS" -name '*.glsl' | xargs grep -L sampler2D | sort | while IFS= read -r f; do
     rel="${f#"$WALLPAPERS"/}"
     name="$(echo "$rel" | tr '/' '_' | sed 's/\.glsl$//')"
     echo "==> $rel"
