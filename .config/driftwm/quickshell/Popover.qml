@@ -29,17 +29,28 @@ PopupWindow {
         if (visible) {
             if (Popups.current && Popups.current !== root) Popups.current.visible = false
             Popups.current = root
+            enterAnim.restart()
         } else if (Popups.current === root) {
             Popups.current = null
         }
     }
 
     Rectangle {
+        id: card
         anchors.fill: parent
         color: Theme.bg
         border.color: Theme.border
         border.width: 1
         radius: Theme.popupRadius
+        transformOrigin: Item.Top
+
+        // Quick pop-in on open; closing is instant (the xdg-popup surface
+        // itself is gone the moment `visible` flips, nothing left to animate).
+        ParallelAnimation {
+            id: enterAnim
+            NumberAnimation { target: card; property: "opacity"; from: 0; to: 1; duration: 140; easing.type: Easing.OutCubic }
+            NumberAnimation { target: card; property: "scale"; from: 0.94; to: 1; duration: 140; easing.type: Easing.OutCubic }
+        }
 
         ColumnLayout {
             id: inner

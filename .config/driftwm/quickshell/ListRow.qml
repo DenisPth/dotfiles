@@ -18,6 +18,10 @@ Item {
         radius: 6
         color: Theme.fg
         opacity: mouse.containsMouse ? Theme.hoverOpacity : 0
+
+        Behavior on opacity {
+            NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
+        }
     }
 
     Text {
