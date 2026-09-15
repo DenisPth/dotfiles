@@ -10,7 +10,7 @@ Item {
 
     readonly property var apps: [
         { icon: "🌐", cmd: ["zen-browser"] },
-        { icon: "⌨",  cmd: ["foot"] },
+        { icon: "⌨",  cmd: ["ghostty"] },
         { icon: "📁", cmd: ["thunar"] },
         { icon: "✈",  cmd: ["Telegram"] },
         { icon: "💬", cmd: ["vesktop"] },

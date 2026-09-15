@@ -31,7 +31,7 @@ overwritten. Edit the live config afterward and you're editing this repo.
 - **waybar** — a `custom/window` module reads driftwm's own IPC
   (`driftwm msg subscribe`) for the focused window title, since driftwm has
   no Hyprland/Sway-style workspaces to hook a stock module into.
-- **foot** (primary) **/ kitty** — Monocraft, dark_sea 16-color palette.
+- **ghostty** (primary) **/ kitty** — Monocraft, dark_sea 16-color palette.
 - **fuzzel** — launcher + `mod+v` clipboard picker (cliphist), Papirus-Dark
   icons.
 - **swaync**, **swaylock**, **cava**, **btop**, **kanshi**, **GTK 3/4**,

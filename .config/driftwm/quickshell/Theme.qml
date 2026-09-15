@@ -23,7 +23,7 @@ Singleton {
         }
     }
 
-    // dark_sea — та же палитра, что у driftwm-декораций/foot/waybar/kitty.
+    // dark_sea — та же палитра, что у driftwm-декораций/ghostty/waybar/kitty.
     readonly property color bg: "#2b323c"
     readonly property color border: "#4b5560"
     readonly property color fg: "#c9c4ab"

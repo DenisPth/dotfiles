@@ -23,7 +23,7 @@ FloatingWindow {
     id: root
 
     title: "Настройки"
-    // Theme.bg at the same alpha foot/kitty use, so it frosts the same way
+    // Theme.bg at the same alpha ghostty/kitty use, so it frosts the same way
     // (the "drift-settings" window rule below sets blur = true).
     color: Qt.rgba(0.169, 0.196, 0.235, 0.85)
     visible: false

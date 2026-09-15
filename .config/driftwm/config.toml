@@ -18,7 +18,7 @@ autostart = [
     "wl-paste --type image --watch cliphist store",
     # Автоблокировка через 5 минут бездействия + перед уходом в сон (раньше
     # блокировка срабатывала только перед сном).
-    "swayidle -w timeout 300 'swaylock -c 2b323c --inside-color 333b45 --ring-color 4b5560 --text-color c9c4ab --key-hl-color 7089a0' before-sleep 'swaylock -c 2b323c --inside-color 333b45 --ring-color 4b5560 --text-color c9c4ab --key-hl-color 7089a0'",
+    "swayidle -w timeout 1800 'swaylock -c 2b323c --inside-color 333b45 --ring-color 4b5560 --text-color c9c4ab --key-hl-color 7089a0' before-sleep 'swaylock -c 2b323c --inside-color 333b45 --ring-color 4b5560 --text-color c9c4ab --key-hl-color 7089a0'",
 ]
 
 # Sloppy focus: windows don't overlap, so a cursor over a window is deliberate.
@@ -87,8 +87,9 @@ remember_layout_per_window = true
 # apps — it replaces the plain launcher on mod+d.
 "mod+d" = "exec ~/.config/driftwm/scripts/spotlight.sh"
 "mod+v" = "exec ~/.config/driftwm/scripts/clipboard.sh"
-# Terminal: foot, themed to match the dark_sea wallpaper (see foot.ini).
-"mod+Return" = "spawn foot"
+# Terminal: ghostty, themed to match the dark_sea wallpaper (see
+# ghostty/config).
+"mod+Return" = "spawn ghostty"
 "mod+e" = "spawn thunar"
 # Telegram Desktop
 "mod+t" = "spawn Telegram"
@@ -139,10 +140,10 @@ blur = true
 title = "Настройки"
 blur = true
 
-# Frost the terminals too, matching the transparency set in foot.ini/kitty.conf
-# (alpha=0.85 both).
+# Frost the terminals too, matching the transparency set in
+# ghostty/config/kitty.conf (background-opacity/alpha=0.85 both).
 [[window_rules]]
-app_id = "foot"
+app_id = "com.mitchellh.ghostty"
 blur = true
 
 [[window_rules]]
@@ -194,7 +195,7 @@ XCURSOR_SIZE = "24"
 # mod+shift+q                     — suspend-window (свернуть окно в фон)
 # mod+d                           — Spotlight: поиск по окнам/приложениям
 # mod+v                           — история буфера обмена (cliphist + fuzzel)
-# mod+Return                       — открыть терминал (foot)
+# mod+Return                       — открыть терминал (ghostty)
 # mod+e                            — открыть проводник (Thunar)
 # mod+t                           — открыть Telegram Desktop
 # mod+m                           — fit-window-snapped (подогнать снапнутый кластер)

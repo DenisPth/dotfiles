@@ -1,0 +1,47 @@
+# ~/.config/ghostty/config
+# Color palette matched to the dark_sea.glsl wallpaper (same mapping as
+# ~/.config/kitty/colors.conf and the Zed "Dark Sea" theme). Replaces foot
+# as the default terminal (mod+Return in driftwm/config.toml).
+
+font-family = Monocraft
+font-size = 11
+
+window-padding-x = 10
+window-padding-y = 10
+window-decoration = false
+confirm-close-surface = false
+
+background = 2b323c
+foreground = c9c4ab
+
+cursor-color = c9c4ab
+cursor-text = 2b323c
+cursor-style = bar
+
+mouse-hide-while-typing = true
+
+# Background transparency (matches alpha=0.85 in foot.ini/kitty.conf).
+background-opacity = 0.85
+
+# ~10k lines equivalent (foot's scrollback.lines=10000).
+scrollback-limit = 10485760
+
+# Regular colors (0-7)
+palette = 0=#2b323c
+palette = 1=#b5665f
+palette = 2=#8a9a7c
+palette = 3=#c9b98a
+palette = 4=#7089a0
+palette = 5=#9a8aa0
+palette = 6=#7fa6a0
+palette = 7=#c9c4ab
+
+# Bright colors (8-15)
+palette = 8=#4b5560
+palette = 9=#c77a72
+palette = 10=#9dad8f
+palette = 11=#dcccA0
+palette = 12=#87a0b8
+palette = 13=#ac9cb3
+palette = 14=#93bab4
+palette = 15=#e2ddc4

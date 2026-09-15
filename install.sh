@@ -41,7 +41,7 @@ need_yay
 yay -S --needed --noconfirm \
     driftwm quickshell \
     waybar kanshi swaync swayosd \
-    foot kitty fuzzel cliphist wl-clipboard \
+    ghostty kitty fuzzel cliphist wl-clipboard \
     cava btop fastfetch jq hyprshot swayidle swaylock \
     curl lm_sensors imagemagick \
     zsh-theme-powerlevel10k zsh-autosuggestions zsh-syntax-highlighting \
@@ -61,7 +61,7 @@ else
 fi
 
 echo "==> Configs (symlinked from this repo, existing files backed up)"
-for d in driftwm waybar foot kitty fuzzel swaync swaylock cava btop kanshi \
+for d in driftwm waybar ghostty kitty fuzzel swaync swaylock cava btop kanshi \
          gtk-3.0 gtk-4.0 fastfetch; do
     link ".config/$d" "$CONFIG_HOME/$d"
 done
