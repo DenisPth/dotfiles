@@ -46,7 +46,7 @@ yay -S --needed --noconfirm \
     curl lm_sensors imagemagick \
     zsh-theme-powerlevel10k zsh-autosuggestions zsh-syntax-highlighting \
     eza zoxide pkgfile \
-    papirus-icon-theme bibata-cursor-git
+    papirus-icon-theme bibata-cursor-git breeze-gtk
 
 echo "==> pkgfile database (powers the command-not-found zsh plugin)"
 sudo pkgfile --update
