@@ -25,8 +25,8 @@
     "mpris": {
         "format": "♫",
         "format-paused": "♫",
-        "on-click": "driftwm msg camera 0 0",
-        "tooltip-format": "{artist} - {title}\nклик — открыть плеер на дашборде"
+        "on-click": "qs -p ~/.config/driftwm/quickshell ipc call player toggle",
+        "tooltip-format": "{artist} - {title}\nклик — открыть/закрыть плеер"
     },
 
     "custom/weather": {

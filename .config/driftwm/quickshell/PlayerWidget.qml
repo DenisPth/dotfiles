@@ -13,10 +13,10 @@ WrapperRectangle {
     border.color: Qt.rgba(Theme.fg.r, Theme.fg.g, Theme.fg.b, 0.10) // Тонкий тёплый блик по контуру панели
     border.width: 1
 
-    margin.left: 10
-    margin.right: 10
-    margin.top: 5
-    margin.bottom: 5
+    leftMargin: 10
+    rightMargin: 10
+    topMargin: 5
+    bottomMargin: 5
 
     RowLayout {
         anchors.fill: parent
@@ -29,8 +29,8 @@ WrapperRectangle {
             Layout.fillWidth: true
             spacing: 15
 
-            visible: Mpris.players.length > 0
-            property var activePlayer: Mpris.players
+            visible: Mpris.players.values.length > 0
+            property var activePlayer: Mpris.players.values.length > 0 ? Mpris.players.values[0] : null
 
             // Блок кнопок управления плеером
             RowLayout {
@@ -55,7 +55,7 @@ WrapperRectangle {
                     Layout.preferredHeight: 24
                     Text {
                         anchors.centerIn: parent
-                        text: playerBlock.activePlayer && playerBlock.activePlayer.playbackStatus === MprisStatus.Playing ? "⏸" : "▶"
+                        text: playerBlock.activePlayer && playerBlock.activePlayer.playbackState === MprisPlaybackState.Playing ? "⏸" : "▶"
                         color: Theme.accent // Акцентный цвет темы
                         font.pixelSize: 16
                     }
@@ -86,8 +86,8 @@ WrapperRectangle {
             // Информация о текущем треке
             Text {
                 id: trackInfo
-                text: playerBlock.activePlayer && playerBlock.activePlayer.metadata["xf86:title"]
-                    ? (playerBlock.activePlayer.metadata["xf86:artist"] ? playerBlock.activePlayer.metadata["xf86:artist"] + " - " : "") + playerBlock.activePlayer.metadata["xf86:title"]
+                text: playerBlock.activePlayer && playerBlock.activePlayer.trackTitle
+                    ? (playerBlock.activePlayer.trackArtist ? playerBlock.activePlayer.trackArtist + " - " : "") + playerBlock.activePlayer.trackTitle
                     : "Музыка не играет"
                 color: Theme.warm // Тёплый светлый акцент темы
                 font.pixelSize: 13
@@ -102,7 +102,7 @@ WrapperRectangle {
             text: "Плеер не запущен"
             color: Theme.border // Приглушённый текст, сливающийся с обоями
             font.pixelSize: 13
-            visible: Mpris.players.length === 0
+            visible: Mpris.players.values.length === 0
             Layout.fillWidth: true
             horizontalAlignment: Text.AlignHCenter
         }

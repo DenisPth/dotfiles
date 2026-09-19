@@ -145,6 +145,16 @@ blur = true
 title = "Настройки"
 blur = true
 
+# Media popup, toggled from waybar's mpris icon. pinned_to_screen (not
+# widget/position, which are canvas coordinates) so it stays put near the
+# bar regardless of camera pan/zoom — same category as the PiP/call-toolbar
+# case in driftwm's own docs.
+[[window_rules]]
+title = "player-popup"
+decoration = "none"
+pinned_to_screen = true
+blur = true
+
 # Frost the terminals too, matching the transparency set in
 # ghostty/config/kitty.conf (background-opacity/alpha=0.85 both).
 [[window_rules]]

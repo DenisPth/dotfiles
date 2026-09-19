@@ -25,6 +25,8 @@ Network 1.0 Network.qml
 Notes 1.0 Notes.qml
 Pomodoro 1.0 Pomodoro.qml
 Popover 1.0 Popover.qml
+PlayerPopup 1.0 PlayerPopup.qml
+PlayerWidget 1.0 PlayerWidget.qml
 PowerMenu 1.0 PowerMenu.qml
 PowerSection 1.0 PowerSection.qml
 Ram 1.0 Ram.qml
