@@ -261,6 +261,10 @@ else
     echo "  gsettings not found, skipping (install gsettings-desktop-schemas/dconf)"
 fi
 
+echo "==> Thunar: hide the traditional menubar (compact hamburger-menu toolbar instead)"
+command -v xfconf-query >/dev/null 2>&1 && \
+    xfconf-query -c thunar -p /last-menubar-visible -n -t bool -s false 2>/dev/null || true
+
 echo "==> Display (only works if driftwm is already running — skipped on a bare-TTY first install)"
 # Picks the mode with the highest resolution, then highest refresh rate at
 # that resolution, applies it live, and asks for a scale factor — then
