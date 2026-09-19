@@ -19,11 +19,13 @@ autostart = [
     # Автоблокировка через 5 минут бездействия + перед уходом в сон (раньше
     # блокировка срабатывала только перед сном).
     #
-    # after-resume: amdgpu часто поднимает DP-1 обратно на preferred-режиме
-    # монитора (60 Hz) вместо разогнанных 165 Hz после выхода из сна — форсим
-    # нужный режим и на всякий случай будим экран (--on), если он остался в
-    # DPMS off.
-    "swayidle -w timeout 1800 'swaylock -c 2a3841 --inside-color 394149 --ring-color 5a636a --text-color e3e7eb --key-hl-color 97d6ff' before-sleep 'swaylock -c 2a3841 --inside-color 394149 --ring-color 5a636a --text-color e3e7eb --key-hl-color 97d6ff' after-resume 'wlr-randr --output DP-1 --on --mode 1920x1080@165'",
+    # after-resume: GPU-драйвер (amdgpu/i915) часто поднимает выход обратно
+    # на preferred-режиме панели (обычно ниже герцовкой) вместо того, что
+    # реально настроено в [[outputs]] ниже — reapply_outputs.py читает этот
+    # же config.toml и форсит нужный режим на каждый выход (и будит его,
+    # если остался в DPMS off). Один и тот же хук работает на любой машине,
+    # т.к. читает конфиг, а не хардкодит имя/герцовку.
+    "swayidle -w timeout 1800 'swaylock -c 2a3841 --inside-color 394149 --ring-color 5a636a --text-color e3e7eb --key-hl-color 97d6ff' before-sleep 'swaylock -c 2a3841 --inside-color 394149 --ring-color 5a636a --text-color e3e7eb --key-hl-color 97d6ff' after-resume '~/.config/driftwm/scripts/reapply_outputs.py'",
 ]
 
 # Sloppy focus: windows don't overlap, so a cursor over a window is deliberate.
