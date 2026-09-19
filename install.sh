@@ -54,7 +54,7 @@ choose_optional_apps() {
     EXTRA_PACKAGES=""
     if [ ! -t 0 ]; then
         echo "  no tty to prompt on, installing all of them by default"
-        EXTRA_PACKAGES="zed telegram-desktop zen-browser-bin"
+        EXTRA_PACKAGES="zed telegram-desktop zen-browser-bin libreoffice-fresh"
         return 0
     fi
     ask() {
@@ -69,6 +69,7 @@ choose_optional_apps() {
     ask "Zed editor?" zed
     ask "Telegram Desktop? (mod+t)" telegram-desktop
     ask "Zen Browser? (mod+a)" zen-browser-bin
+    ask "LibreOffice?" libreoffice-fresh
 }
 
 install_packages() {
@@ -155,6 +156,16 @@ if [ ! -d "$HOME/.oh-my-zsh" ]; then
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
 else
     echo "  already installed, skipping"
+fi
+
+echo "==> Default shell"
+current_shell="$(getent passwd "$(id -un)" | cut -d: -f7)"
+zsh_path="$(command -v zsh)"
+if [ "$current_shell" != "$zsh_path" ]; then
+    echo "  switching from $current_shell to $zsh_path (takes effect next login)"
+    chsh -s "$zsh_path"
+else
+    echo "  already zsh"
 fi
 
 echo "==> Zsh plugins/theme (git-cloned rather than a distro package, so it doesn't drift if pacman's copy moves)"
