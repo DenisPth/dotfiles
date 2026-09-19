@@ -54,7 +54,7 @@ choose_optional_apps() {
     EXTRA_PACKAGES=""
     if [ ! -t 0 ]; then
         echo "  no tty to prompt on, installing all of them by default"
-        EXTRA_PACKAGES="zed telegram-desktop zen-browser-bin libreoffice-fresh throne-bin"
+        EXTRA_PACKAGES="zed telegram-desktop zen-browser-bin libreoffice-fresh throne-bin neovim"
         return 0
     fi
     ask() {
@@ -71,6 +71,7 @@ choose_optional_apps() {
     ask "Zen Browser? (mod+a)" zen-browser-bin
     ask "LibreOffice?" libreoffice-fresh
     ask "Throne (VLESS/VMess/etc. proxy client)?" throne-bin
+    ask "Neovim?" neovim
 }
 
 install_packages() {
