@@ -149,15 +149,16 @@ blur = true
 # stays put near the bar regardless of camera pan/zoom — same category as
 # the PiP/call-toolbar case in driftwm's own docs. position is output-
 # relative, window-center, Y-up (screen-pinned convention); for this
-# window's ~508x46 size on a 1920x1080 output these numbers put its
-# top-left corner at screen pixel (16, 38) — flush under the 38px waybar
-# with a 16px left margin, near the mpris icon in modules-left. Recompute
-# if the popup's typical size changes noticeably.
+# window's ~338x237 size (fixed height regardless of track — see
+# PlayerPopup.qml) on a 1920x1080 output these numbers put its top-left
+# corner at screen pixel (16, 38) — flush under the 38px waybar with a
+# 16px left margin, near the mpris icon in modules-left. Recompute if the
+# popup's typical size changes noticeably.
 [[window_rules]]
 title = "player-popup"
 decoration = "none"
 pinned_to_screen = true
-position = [-690, 479]
+position = [-775, 384]
 blur = true
 
 # Frost the terminals too, matching the transparency set in
