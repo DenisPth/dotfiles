@@ -9,7 +9,10 @@ ColumnLayout {
     id: root
     spacing: 6
 
-    readonly property string output: "DP-1"
+    // The enabled output — found live from wlr-randr's own list rather than
+    // a fixed name, since that's "DP-1" on a desktop and "eDP-1" (or
+    // something else entirely) on a laptop.
+    property string output: ""
     property var modes: []
     property string current: ""
 
@@ -27,8 +30,9 @@ ColumnLayout {
         } catch (e) {
             return
         }
-        const out = data.find(o => o.name === root.output)
+        const out = data.find(o => o.enabled) || data[0]
         if (!out) return
+        root.output = out.name
         const seen = new Set()
         const list = []
         for (const m of out.modes) {

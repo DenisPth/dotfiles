@@ -180,7 +180,9 @@ name = "DP-1"
 mode = "1920x1080@165"  # частота обновления — подставьте герцовку своего монитора
 scale = 1.0
 [env]
-GTK_THEME = "Adwaita:dark"
+# No GTK_THEME override here on purpose — it beats gsettings and
+# gtk-3.0/settings.ini's gtk-theme-name=Breeze outright, which is exactly
+# what silently forced every GTK app back to Adwaita before.
 XCURSOR_THEME = "Bibata-Modern-Classic"
 XCURSOR_SIZE = "24"
 

@@ -24,15 +24,14 @@ cd ~/dotfiles
 ./install.sh
 ```
 
-Supports **Arch/Manjaro** (needs [`yay`](https://github.com/Jguer/yay) —
-driftwm and a couple of other pieces only exist on the AUR) and **Fedora**
-(driftwm is built from source, a few packages come from COPR — see the
-notes `install.sh` prints at the end). The script installs every package
-these configs expect, symlinks the configs from this repo into `~/.config`
-and `~` (existing files are backed up, timestamped, rather than
-overwritten), and asks once whether you want `sddm` or `ly` (themed
-dark_sea) set up as your login manager. Edit the live config afterward and
-you're editing this repo.
+Arch/Manjaro only — needs [`yay`](https://github.com/Jguer/yay), since
+driftwm and a couple of other pieces only exist on the AUR. The script
+installs every package these configs expect, asks about a few personal apps
+(Zed, Telegram, Zen Browser — used by a couple of keybindings but not part
+of the rice itself) and whether you want `sddm` or `ly` (themed dark_sea)
+as your login manager, then symlinks the configs from this repo into
+`~/.config` and `~` (existing files are backed up, timestamped, rather than
+overwritten). Edit the live config afterward and you're editing this repo.
 
 ## What's here
 
