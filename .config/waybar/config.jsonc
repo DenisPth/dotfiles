@@ -11,15 +11,29 @@
     // hyprland/window (которые тут молча ничего не показывали бы — нет
     // hyprland-сокета) берём заголовок активного окна через нативный IPC
     // driftwm (см. scripts/driftwm-window.sh).
-    "modules-left": ["custom/window"],
+    "modules-left": ["custom/window", "mpris"],
     "modules-center": ["clock"],
-    "modules-right": ["network", "bluetooth", "pulseaudio", "custom/power-profile", "battery", "tray"],
+    "modules-right": ["custom/weather", "network", "bluetooth", "pulseaudio", "custom/power-profile", "battery", "tray"],
 
     "custom/window": {
         "exec": "~/.config/waybar/scripts/driftwm-window.sh",
         "format": "{}",
         "max-length": 40,
         "tooltip": false
+    },
+
+    "mpris": {
+        "format": "♫",
+        "format-paused": "♫",
+        "on-click": "driftwm msg camera 0 0",
+        "tooltip-format": "{artist} - {title}\nклик — открыть плеер на дашборде"
+    },
+
+    "custom/weather": {
+        "exec": "~/.config/waybar/scripts/weather.sh",
+        "return-type": "json",
+        "interval": 1800,
+        "tooltip": true
     },
 
     "clock": {

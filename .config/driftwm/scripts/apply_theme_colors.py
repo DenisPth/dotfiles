@@ -220,7 +220,9 @@ color: {t['RED']};
 #backlight,
 #idle_inhibitor,
 #custom-notification,
-#custom-window {{
+#custom-window,
+#mpris,
+#custom-weather {{
 padding: 0 10px;
 color: {t['FG']};
 }}
