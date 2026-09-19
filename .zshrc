@@ -138,22 +138,25 @@ done
 
 ## dotfiles CLI — `dotfiles status` / `dotfiles update`. Version numbers are
 ## just the commit's position in history (git rev-list --count), so each
-## commit to the repo is one incrementing version — v134, v135, …
+## commit to the repo is one incrementing version — v134, v135, … `status`
+## does a quick (3s timeout, best-effort) `git fetch` first so it notices
+## commits pushed from another machine, not just local ones.
 dotfiles() {
-    local repo=~/dotfiles head installed n
+    local repo=~/dotfiles target installed n
     [[ -d "$repo/.git" ]] || { echo "dotfiles: $repo — не git-репозиторий" >&2; return 1; }
-    head="$(git -C "$repo" rev-parse HEAD 2>/dev/null)" || return 1
-    installed="$(<"$repo/.installed_version" 2>/dev/null)"
     case "${1:-status}" in
         status)
-            echo "репозиторий:  v$(git -C "$repo" rev-list --count "$head")  $(git -C "$repo" log -1 --format='%h %s' "$head")"
+            timeout 3 git -C "$repo" fetch --quiet 2>/dev/null
+            target="$(git -C "$repo" rev-parse '@{u}' 2>/dev/null || git -C "$repo" rev-parse HEAD)"
+            installed="$(<"$repo/.installed_version" 2>/dev/null)"
+            echo "на GitHub:    v$(git -C "$repo" rev-list --count "$target")  $(git -C "$repo" log -1 --format='%h %s' "$target")"
             if [[ -n "$installed" ]]; then
                 echo "установлено:  v$(git -C "$repo" rev-list --count "$installed")  $(git -C "$repo" log -1 --format='%h %s' "$installed")"
             else
                 echo "установлено:  —  (update.sh ещё не запускался на этой машине)"
             fi
-            if [[ "$head" != "$installed" ]]; then
-                n="$(git -C "$repo" rev-list --count "${installed:-$head}..$head")"
+            if [[ "$target" != "$installed" ]]; then
+                n="$(git -C "$repo" rev-list --count "${installed:-$target}..$target")"
                 echo "-> доступно обновление: $n коммит(ов). Запусти: dotfiles update"
             else
                 echo "-> актуально"
@@ -169,16 +172,17 @@ dotfiles() {
     esac
 }
 
-## dotfiles version check — repo (~/dotfiles) HEAD vs. what update.sh/
-## install.sh last actually applied. Only interactive+tty shells get asked,
-## so this stays silent under scp, VS Code remote, cron, etc. `dotfiles
-## status` gives the same comparison with version numbers, any time.
+## dotfiles version check — GitHub vs. what update.sh/install.sh last
+## actually applied on this machine. Only interactive+tty shells get asked,
+## so this stays silent under scp, VS Code remote, cron, etc. The fetch is
+## best-effort (3s timeout) — no network just means no prompt this time.
 if [[ -o interactive && -t 0 && -d ~/dotfiles/.git ]]; then
-    _df_head="$(git -C ~/dotfiles rev-parse HEAD 2>/dev/null)"
+    timeout 3 git -C ~/dotfiles fetch --quiet 2>/dev/null
+    _df_target="$(git -C ~/dotfiles rev-parse '@{u}' 2>/dev/null || git -C ~/dotfiles rev-parse HEAD 2>/dev/null)"
     _df_installed="$(<~/dotfiles/.installed_version 2>/dev/null)"
-    if [[ -n "$_df_head" && "$_df_head" != "$_df_installed" ]]; then
-        _df_n="$(git -C ~/dotfiles rev-list --count "${_df_installed:-$_df_head}..$_df_head" 2>/dev/null)"
-        _df_v="$(git -C ~/dotfiles rev-list --count "$_df_head" 2>/dev/null)"
+    if [[ -n "$_df_target" && "$_df_target" != "$_df_installed" ]]; then
+        _df_n="$(git -C ~/dotfiles rev-list --count "${_df_installed:-$_df_target}..$_df_target" 2>/dev/null)"
+        _df_v="$(git -C ~/dotfiles rev-list --count "$_df_target" 2>/dev/null)"
         echo "dotfiles: доступно обновление v${_df_v:-?} (${_df_n:-?} коммитов новее установленной версии)."
         printf "Обновить сейчас (симлинки конфигов, настройки сохранятся)? [y/N] "
         read -r _df_reply
@@ -186,5 +190,5 @@ if [[ -o interactive && -t 0 && -d ~/dotfiles/.git ]]; then
             dotfiles update
         fi
     fi
-    unset _df_head _df_installed _df_n _df_v _df_reply
+    unset _df_target _df_installed _df_n _df_v _df_reply
 fi

@@ -10,6 +10,11 @@ REPO_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 TS="$(date +%Y%m%d-%H%M%S)"
 
+echo "==> Pulling latest from origin"
+if ! git -C "$REPO_DIR" pull --ff-only; then
+    echo "  pull failed (offline, or local commits diverge from origin) — continuing with the repo as it is locally" >&2
+fi
+
 link() {
     # link <repo-relative path> <absolute target path>
     src="$REPO_DIR/$1"
