@@ -160,11 +160,14 @@ install_ly() {
         fedora)
             sudo dnf copr enable -y fnux/ly
             sudo dnf install -y ly
-            # ly runs on tty2 by default; a getty there would fight it for the seat.
-            sudo systemctl disable --now getty@tty2.service 2>/dev/null || true
             ;;
     esac
-    sudo systemctl enable ly
+    # ly@.service is a template unit (runs on one tty, given as the
+    # instance) on both Arch's and Fedora's packages — plain "ly" isn't a
+    # real unit name. tty2 is upstream's own default; a getty there would
+    # fight ly for the seat, so it has to go.
+    sudo systemctl disable --now getty@tty2.service 2>/dev/null || true
+    sudo systemctl enable ly@tty2.service
 
     if [ -f /etc/ly/config.ini ]; then
         echo "  theming /etc/ly/config.ini to dark_sea"
