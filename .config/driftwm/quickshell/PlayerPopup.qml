@@ -62,6 +62,9 @@ FloatingWindow {
         topMargin: 16
         bottomMargin: 16
 
+        focus: true
+        Keys.onEscapePressed: root.visible = false
+
         Item {
             id: body
             implicitWidth: 300
@@ -84,6 +87,10 @@ FloatingWindow {
                     color: Theme.track
                     border.width: root.active && root.player.isPlaying ? 2 : 0
                     border.color: Theme.accent
+
+                    Behavior on border.width {
+                        NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+                    }
 
                     Image {
                         id: art
@@ -128,7 +135,7 @@ FloatingWindow {
                             Text {
                                 id: titleText
                                 text: root.active ? (root.player.trackTitle || root.player.identity) : "Музыка не играет"
-                                color: Theme.fg
+                                color: root.active ? Theme.warm : Theme.fg
                                 font.bold: true
                                 font.pixelSize: Theme.fontSize
                                 font.family: Theme.fontFamily
@@ -136,7 +143,7 @@ FloatingWindow {
 
                             Text {
                                 text: titleText.text
-                                color: Theme.fg
+                                color: root.active ? Theme.warm : Theme.fg
                                 font.bold: true
                                 font.pixelSize: Theme.fontSize
                                 font.family: Theme.fontFamily
@@ -242,6 +249,18 @@ FloatingWindow {
                 spacing: 10
 
                 FlatButton {
+                    text: "⇄"
+                    fontSize: 15
+                    padX: 8
+                    padY: 8
+                    visible: root.active && root.player.shuffleSupported
+                    highlighted: root.active && root.player.shuffle
+                    enabled: root.active && root.player.canControl
+                    textOpacity: highlighted ? 1 : 0.4
+                    onClicked: if (root.active) root.player.shuffle = !root.player.shuffle
+                }
+
+                FlatButton {
                     text: "⏮"
                     fontSize: 20
                     padX: 10
@@ -270,6 +289,23 @@ FloatingWindow {
                     enabled: root.active && root.player.canGoNext
                     textOpacity: enabled ? 1 : 0.3
                     onClicked: if (root.active) root.player.next()
+                }
+
+                FlatButton {
+                    text: root.active && root.player.loopState === MprisLoopState.Track ? "↻¹" : "↻"
+                    fontSize: 15
+                    padX: 8
+                    padY: 8
+                    visible: root.active && root.player.loopSupported
+                    highlighted: root.active && root.player.loopState !== MprisLoopState.None
+                    enabled: root.active && root.player.canControl
+                    textOpacity: highlighted ? 1 : 0.4
+                    onClicked: {
+                        if (!root.active) return
+                        const s = MprisLoopState
+                        root.player.loopState = root.player.loopState === s.None ? s.Playlist
+                            : root.player.loopState === s.Playlist ? s.Track : s.None
+                    }
                 }
             }
             }

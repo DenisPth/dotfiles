@@ -34,8 +34,8 @@ restore_windows = true
 restore_camera = true
 
 [background]
-type = "wallpaper"
-path = "~/.config/driftwm/wallpapers/custom/wallpaper.png"
+type = "shader"
+path = "~/.config/driftwm/wallpapers/dark_sea.glsl"
 #path = "~/.config/driftwm/wallpapers/animated/fast_smoke.glsl"
 #path = "~/.config/driftwm/wallpapers/textured/mirrored_parallax.glsl"
 

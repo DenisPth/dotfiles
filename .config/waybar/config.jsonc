@@ -26,7 +26,10 @@
         "format": "♫",
         "format-paused": "♫",
         "on-click": "qs -p ~/.config/driftwm/quickshell ipc call player toggle",
-        "tooltip-format": "{artist} - {title}\nклик — открыть/закрыть плеер"
+        "on-click-middle": "playerctl play-pause",
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous",
+        "tooltip-format": "{artist} - {title}\nклик — открыть/закрыть плеер, средняя кнопка — пауза, скролл — след./пред. трек"
     },
 
     "custom/weather": {
@@ -44,7 +47,11 @@
     "pulseaudio": {
         "format": "{volume}%",
         "format-muted": "Muted",
-        "on-click": "pavucontrol"
+        "on-click": "pavucontrol",
+        "on-click-middle": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+        "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +5%",
+        "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -5%",
+        "tooltip-format": "клик — pavucontrol, средняя кнопка — mute, скролл — громкость"
     },
 
     "network": {

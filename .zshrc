@@ -135,3 +135,21 @@ do
     [[ -e "$f" ]] && { source "$f"; break }
 done
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+## dotfiles version check — repo (~/dotfiles) HEAD vs. what update.sh/
+## install.sh last actually applied. Only interactive+tty shells get asked,
+## so this stays silent under scp, VS Code remote, cron, etc.
+if [[ -o interactive && -t 0 && -d ~/dotfiles/.git ]]; then
+    _df_head="$(git -C ~/dotfiles rev-parse HEAD 2>/dev/null)"
+    _df_installed="$(<~/dotfiles/.installed_version 2>/dev/null)"
+    if [[ -n "$_df_head" && "$_df_head" != "$_df_installed" ]]; then
+        _df_n="$(git -C ~/dotfiles rev-list --count "${_df_installed:-$_df_head}..$_df_head" 2>/dev/null)"
+        echo "dotfiles: доступно обновление (${_df_n:-?} коммитов новее установленной версии)."
+        printf "Обновить сейчас (симлинки конфигов, настройки сохранятся)? [y/N] "
+        read -r _df_reply
+        if [[ "$_df_reply" == [Yy]* ]]; then
+            ~/dotfiles/update.sh
+        fi
+    fi
+    unset _df_head _df_installed _df_n _df_reply
+fi

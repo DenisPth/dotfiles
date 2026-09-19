@@ -11,7 +11,6 @@ set -eu
 REPO_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
-TS="$(date +%Y%m%d-%H%M%S)"
 
 if [ -f /etc/os-release ]; then
     # shellcheck disable=SC1091
@@ -24,22 +23,6 @@ if [ -f /etc/os-release ]; then
             ;;
     esac
 fi
-
-link() {
-    # link <repo-relative path> <absolute target path>
-    src="$REPO_DIR/$1"
-    dst="$2"
-    [ -e "$src" ] || return 0
-    if [ -e "$dst" ] && [ ! -L "$dst" ]; then
-        mv -- "$dst" "$dst.$TS.bak"
-        echo "  backed up $dst -> $dst.$TS.bak"
-    elif [ -L "$dst" ]; then
-        rm -f -- "$dst"
-    fi
-    mkdir -p -- "$(dirname -- "$dst")"
-    ln -s -- "$src" "$dst"
-    echo "  linked $dst -> $src"
-}
 
 clone_if_missing() {
     # clone_if_missing <repo-url> <dest-dir>
@@ -215,21 +198,7 @@ clone_if_missing https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/p
 clone_if_missing https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
 clone_if_missing https://github.com/romkatv/powerlevel10k "$ZSH_CUSTOM/themes/powerlevel10k"
 
-echo "==> Configs (symlinked from this repo, existing files backed up)"
-for d in driftwm waybar ghostty kitty fuzzel swaync swaylock cava btop kanshi \
-         gtk-3.0 gtk-4.0 fastfetch; do
-    link ".config/$d" "$CONFIG_HOME/$d"
-done
-link ".config/kdeglobals" "$CONFIG_HOME/kdeglobals"
-link ".config/kcminputrc" "$CONFIG_HOME/kcminputrc"
-link ".config/zed/settings.json" "$CONFIG_HOME/zed/settings.json"
-link ".config/zed/themes/dark_sea.json" "$CONFIG_HOME/zed/themes/dark_sea.json"
-link ".zshrc" "$HOME/.zshrc"
-link ".p10k.zsh" "$HOME/.p10k.zsh"
-
-chmod +x "$CONFIG_HOME"/driftwm/scripts/*.sh 2>/dev/null || true
-chmod +x "$CONFIG_HOME"/driftwm/scripts/*.py 2>/dev/null || true
-chmod +x "$CONFIG_HOME"/waybar/scripts/*.sh 2>/dev/null || true
+"$REPO_DIR/update.sh"
 
 echo "==> Monocraft (Nerd Font patched) — not packaged, fetched from upstream release"
 font_file="$HOME/.local/share/fonts/Monocraft/Monocraft-nerd-fonts-patched.ttc"

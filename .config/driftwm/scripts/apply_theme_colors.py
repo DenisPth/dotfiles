@@ -222,12 +222,51 @@ color: {t['RED']};
 #custom-notification,
 #custom-window,
 #mpris,
+#custom-power-profile,
+#bluetooth,
 #custom-weather {{
 padding: 0 10px;
 color: {t['FG']};
 }}
 
+/* Chip-style modules: subtle pill, hover feedback (workspaces buttons above
+   already have their own active/hover language, kept separate). */
+#mpris,
+#custom-weather,
+#network,
+#bluetooth,
+#pulseaudio,
+#custom-power-profile,
+#battery,
+#tray {{
+margin: 5px 2px;
+border-radius: 8px;
+transition: background 120ms ease;
+}}
+
+#mpris:hover,
+#custom-weather:hover,
+#network:hover,
+#bluetooth:hover,
+#pulseaudio:hover,
+#custom-power-profile:hover,
+#battery:hover,
+#tray:hover {{
+background: {t['TRACK']};
+}}
+
 #custom-window {{
+color: {t['DIM']};
+}}
+
+/* mpris playback state — waybar's built-in module sets these classes
+   itself (playing/paused/stopped), no format wiring needed. */
+#mpris.playing {{
+color: {t['ACCENT']};
+}}
+
+#mpris.paused,
+#mpris.stopped {{
 color: {t['DIM']};
 }}
 
