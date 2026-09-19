@@ -84,8 +84,13 @@ install_packages() {
     fi
 
     # Same story: swaylock-effects (the fork whose extra options
-    # swaylock/config actually uses) conflicts with plain swaylock.
-    if pacman -Qq swaylock >/dev/null 2>&1; then
+    # swaylock/config actually uses) conflicts with plain swaylock. `pacman
+    # -Qq swaylock` alone isn't enough here — swaylock-effects itself
+    # Provides=swaylock, so once it's installed that query matches it too
+    # (exit 0) even though literal "swaylock" isn't installed, and the
+    # -Rdd below then dies with "target not found: swaylock". Grepping the
+    # exact installed-package list sidesteps the provides resolution.
+    if pacman -Qq | grep -qx swaylock; then
         echo "  removing swaylock (conflicts with swaylock-effects)"
         sudo pacman -Rdd --noconfirm swaylock
     fi
