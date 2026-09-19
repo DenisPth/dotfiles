@@ -24,10 +24,15 @@ Singleton {
     }
 
     // dark_sea — та же палитра, что у driftwm-декораций/ghostty/waybar/kitty.
-    readonly property color bg: "#2b323c"
-    readonly property color border: "#4b5560"
-    readonly property color fg: "#c9c4ab"
-    readonly property color track: "#333b45"
+    // bg/border/fg/track/accent/warm перегенерируются целиком при смене обоев
+    // (см. ~/.config/driftwm/scripts/apply_theme_colors.py) — quickshell сам
+    // подхватывает файл живьём, отдельной перезагрузки не нужно.
+    readonly property color bg: "#2a3841"
+    readonly property color border: "#5a636a"
+    readonly property color fg: "#e3e7eb"
+    readonly property color track: "#394149"
+    readonly property color accent: "#97d6ff"
+    readonly property color warm: "#d2c7f0"
     readonly property real dim: 0.5
     readonly property real hoverOpacity: 0.1
     readonly property int fontSize: 14

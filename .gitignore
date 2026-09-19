@@ -2,7 +2,8 @@
 # session) — git is the history now, these are just noise.
 *.bak*
 
-# Notes widget's scratch content, weather's location override — personal,
-# not part of the rice.
+# Notes widget's scratch content, weather's location override, clock's
+# 12h/24h choice — personal, not part of the rice.
 .config/driftwm/quickshell/notes.txt
 .config/driftwm/quickshell/weather_location.txt
+.config/driftwm/quickshell/clock_format.txt

@@ -59,14 +59,14 @@ eval "$(dircolors -b)"
 # eza — file-type icons/colors matched to the dark_sea palette (same hues as
 # foot/kitty/waybar/kdeglobals). 38;2;r;g;b = truecolor.
 export EZA_COLORS="\
-di=38;2;112;137;160:\
+di=38;2;151;214;255:\
 ln=38;2;127;166;160:\
 ex=38;2;138;154;124:\
 or=38;2;181;102;95:\
 pi=38;2;154;138;160:\
 so=38;2;201;185;138:\
-bd=38;2;75;85;96:\
-cd=38;2;75;85;96:\
+bd=38;2;90;99;106:\
+cd=38;2;90;99;106:\
 su=38;2;181;102;95:\
 sg=38;2;181;102;95:\
 tw=38;2;181;102;95:\
@@ -85,8 +85,7 @@ plugins=(
     sudo                    # Esc Esc: prepend sudo to the command
     extract                 # x archive.tar.gz
     colored-man-pages
-    command-not-found       # needs pkgfile
-    archlinux               # pacman/yay short aliases
+    command-not-found       # backend auto-detected (pkgfile on Arch, dnf on Fedora)
     dirhistory              # alt+←/→/↑ through directory history
     copypath                # copy pwd/file path to the clipboard
     copyfile                # copy a file's contents to the clipboard
@@ -100,6 +99,8 @@ plugins=(
     zoxide                  # z — frecency-based cd
     history-substring-search
 )
+# pacman/yay short aliases — only make sense where pacman actually exists.
+command -v pacman >/dev/null 2>&1 && plugins+=(archlinux)
 
 # Theme is Powerlevel10k, but from the system package (not an OMZ custom
 # theme) — loaded manually below, same as before this migration.
@@ -107,16 +108,30 @@ ZSH_THEME=""
 
 source $ZSH/oh-my-zsh.sh
 
-# Autosuggestions + syntax highlighting — system packages, not OMZ plugins.
-# Syntax highlighting must load last, after everything else that defines
-# widgets (autosuggestions included), or the two fight over keybindings.
+# Autosuggestions + syntax highlighting — prefer install.sh's git clone into
+# $ZSH_CUSTOM (same path on every distro), fall back to the Arch package
+# paths (/usr/share/...) if that clone was never run on this machine. Syntax
+# highlighting must load last, after everything else that defines widgets
+# (autosuggestions included), or the two fight over keybindings.
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#4b5560'
-[[ -e /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]] && \
-    source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-[[ -e /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] && \
-    source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+for f in \
+    "$ZSH_CUSTOM/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" \
+    "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+do
+    [[ -e "$f" ]] && { source "$f"; break }
+done
+for f in \
+    "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" \
+    "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+do
+    [[ -e "$f" ]] && { source "$f"; break }
+done
 
 # Powerlevel10k — цвета под тему dark_sea (та же палитра, что у всей системы).
-[[ -e /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme ]] && \
-    source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
+for f in \
+    "$ZSH_CUSTOM/themes/powerlevel10k/powerlevel10k.zsh-theme" \
+    "/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme"
+do
+    [[ -e "$f" ]] && { source "$f"; break }
+done
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

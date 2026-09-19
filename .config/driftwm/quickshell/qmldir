@@ -9,6 +9,7 @@ Bluetooth 1.0 Bluetooth.qml
 BluetoothSection 1.0 BluetoothSection.qml
 Brightness 1.0 Brightness.qml
 Clock 1.0 Clock.qml
+ClockSection 1.0 ClockSection.qml
 Cpu 1.0 Cpu.qml
 Dashboard 1.0 Dashboard.qml
 Disk 1.0 Disk.qml
@@ -16,6 +17,7 @@ DisplaySection 1.0 DisplaySection.qml
 FlatButton 1.0 FlatButton.qml
 KbdLayout 1.0 KbdLayout.qml
 KeyboardSection 1.0 KeyboardSection.qml
+KeybindsSection 1.0 KeybindsSection.qml
 ListRow 1.0 ListRow.qml
 MonthView 1.0 MonthView.qml
 Mpris 1.0 Mpris.qml
@@ -36,4 +38,5 @@ Tray 1.0 Tray.qml
 UpdatesSection 1.0 UpdatesSection.qml
 Volume 1.0 Volume.qml
 Weather 1.0 Weather.qml
+WeatherSection 1.0 WeatherSection.qml
 WifiSection 1.0 WifiSection.qml

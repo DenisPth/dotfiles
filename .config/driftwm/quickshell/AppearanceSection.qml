@@ -31,7 +31,7 @@ ColumnLayout {
 
     function apply(rel) {
         rewrite.command = ["sh", "-c",
-            `sed -i 's|^path = ".*"|path = "~/.config/driftwm/wallpapers/${rel}"|' ~/.config/driftwm/config.toml && driftwm msg action reload-config`]
+            `sed -i 's|^path = ".*"|path = "~/.config/driftwm/wallpapers/${rel}"|' ~/.config/driftwm/config.toml && ~/.config/driftwm/scripts/apply_theme_colors.py '${rel}' && driftwm msg action reload-config`]
         rewrite.running = true
         root.active = rel
     }

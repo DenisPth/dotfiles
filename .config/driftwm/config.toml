@@ -18,7 +18,7 @@ autostart = [
     "wl-paste --type image --watch cliphist store",
     # Автоблокировка через 5 минут бездействия + перед уходом в сон (раньше
     # блокировка срабатывала только перед сном).
-    "swayidle -w timeout 1800 'swaylock -c 2b323c --inside-color 333b45 --ring-color 4b5560 --text-color c9c4ab --key-hl-color 7089a0' before-sleep 'swaylock -c 2b323c --inside-color 333b45 --ring-color 4b5560 --text-color c9c4ab --key-hl-color 7089a0'",
+    "swayidle -w timeout 1800 'swaylock -c 2a3841 --inside-color 394149 --ring-color 5a636a --text-color e3e7eb --key-hl-color 97d6ff' before-sleep 'swaylock -c 2a3841 --inside-color 394149 --ring-color 5a636a --text-color e3e7eb --key-hl-color 97d6ff'",
 ]
 
 # Sloppy focus: windows don't overlap, so a cursor over a window is deliberate.
@@ -70,8 +70,8 @@ decoration_fit_snapped = true
 
 [decorations]
 # Dark SSD title bars matching the system-wide dark_sea color scheme.
-bg_color = "#2b323c"
-fg_color = "#c9c4ab"
+bg_color = "#2a3841"
+fg_color = "#e3e7eb"
 
 [input.keyboard]
 layout = "us,ru"
@@ -107,6 +107,8 @@ remember_layout_per_window = true
 "ctrl+print" = "spawn driftwm msg screenshot window -o - | wl-copy"
 # Hyprshot: interactive region screenshot to clipboard.
 "mod+shift+s" = "spawn hyprshot -m region --clipboard-only"
+# Toggle screen recording for TikTok clips (region-picked, saved to ~/Videos/tiktok).
+"mod+shift+v" = "spawn ~/.config/driftwm/scripts/record_clip.sh"
 "mod+alt+shift+q" = "exec systemctl poweroff"
 "Super+L" = "exec swaylock"
 "mod + a" = "spawn zen-browser"
@@ -202,6 +204,7 @@ XCURSOR_SIZE = "24"
 # mod+shift+m                     — fit-window (подогнать только текущее окно)
 # ctrl+print                      — скриншот активного окна в буфер обмена
 # mod+shift+s                     — hyprshot: скриншот области в буфер обмена
+# mod+shift+v                     — запись видео с экрана (тумблер, ~/Videos/tiktok)
 # mod+alt+shift+q                 — systemctl poweroff (выключение системы)
 #
 # --- Медиа-клавиши (через swayosd) ---

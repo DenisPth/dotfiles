@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
-# install.sh — full dark_sea rice setup, from a bare Manjaro/Arch machine to
-# this exact desktop: driftwm + every tool the configs in this repo expect,
-# the configs themselves (symlinked in, so future edits land back in this
-# repo), and the Monocraft font.
+# install.sh — full dark_sea rice setup, from a bare Arch/Manjaro or Fedora
+# machine to this exact desktop: driftwm + every tool the configs in this
+# repo expect, the configs themselves (symlinked in, so future edits land
+# back in this repo), and the Monocraft font.
 #
 # Idempotent: existing targets are backed up (timestamped, never clobbered)
 # before being replaced with a symlink into this repo.
@@ -10,15 +10,25 @@ set -eu
 
 REPO_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 TS="$(date +%Y%m%d-%H%M%S)"
 
-need_yay() {
-    command -v yay >/dev/null 2>&1 || {
-        echo "error: yay (AUR helper) not found — driftwm only exists on the AUR." >&2
-        echo "  Install yay first: https://github.com/Jguer/yay#installation" >&2
-        exit 1
-    }
+# ---------------------------------------------------------------- distro ---
+DISTRO=""
+if [ -f /etc/os-release ]; then
+    # shellcheck disable=SC1091
+    . /etc/os-release
+    case " ${ID:-} ${ID_LIKE:-} " in
+        *" fedora "*) DISTRO=fedora ;;
+        *" arch "*)   DISTRO=arch ;;
+    esac
+fi
+[ -n "$DISTRO" ] || {
+    echo "error: unrecognized distro (checked /etc/os-release ID/ID_LIKE for" >&2
+    echo "  arch or fedora) — this installer only knows those two." >&2
+    exit 1
 }
+echo "==> Detected distro: $DISTRO"
 
 link() {
     # link <repo-relative path> <absolute target path>
@@ -36,21 +46,161 @@ link() {
     echo "  linked $dst -> $src"
 }
 
-echo "==> Packages (pacman + AUR via yay)"
-need_yay
-yay -S --needed --noconfirm \
-    driftwm quickshell \
-    waybar kanshi swaync swayosd \
-    ghostty kitty fuzzel cliphist wl-clipboard \
-    cava btop fastfetch jq hyprshot swayidle swaylock \
-    curl lm_sensors imagemagick \
-    zsh-theme-powerlevel10k zsh-autosuggestions zsh-syntax-highlighting \
-    eza zoxide pkgfile \
-    papirus-icon-theme bibata-cursor-git breeze-gtk
+clone_if_missing() {
+    # clone_if_missing <repo-url> <dest-dir>
+    [ -d "$2" ] || git clone --depth 1 "$1" "$2"
+}
 
-echo "==> pkgfile database (powers the command-not-found zsh plugin)"
-sudo pkgfile --update
-sudo systemctl enable --now pkgfile-update.timer 2>/dev/null || true
+# --------------------------------------------------------- driftwm (Fedora) --
+# Fedora has no driftwm package (Arch's AUR does) — built from source per
+# https://github.com/malbiruk/driftwm#build-from-source.
+build_driftwm_from_source() {
+    command -v driftwm >/dev/null 2>&1 && {
+        echo "  driftwm already installed, skipping build"
+        return 0
+    }
+    echo "==> driftwm (built from source — no Fedora package yet)"
+
+    rust_ok=0
+    if command -v rustc >/dev/null 2>&1; then
+        minor="$(rustc --version | sed -n 's/^rustc 1\.\([0-9][0-9]*\).*/\1/p')"
+        [ -n "$minor" ] && [ "$minor" -ge 88 ] && rust_ok=1
+    fi
+    if [ "$rust_ok" -eq 0 ]; then
+        echo "  system rust is missing or older than 1.88 (driftwm needs edition 2024) — installing via rustup"
+        curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal
+        # shellcheck disable=SC1091
+        . "$HOME/.cargo/env"
+    fi
+
+    src="$(mktemp -d)"
+    git clone --depth 1 https://github.com/malbiruk/driftwm.git "$src/driftwm"
+    (cd "$src/driftwm" && make build && sudo make install)
+    rm -rf "$src"
+}
+
+# hyprshot is a single upstream shell script, not a reliable Fedora package.
+install_hyprshot_fedora() {
+    command -v hyprshot >/dev/null 2>&1 && return 0
+    echo "==> hyprshot (no Fedora package — it's one upstream shell script)"
+    mkdir -p "$HOME/.local/bin"
+    curl -fsSL -o "$HOME/.local/bin/hyprshot" \
+        https://raw.githubusercontent.com/Gustash/Hyprshot/main/hyprshot
+    chmod +x "$HOME/.local/bin/hyprshot"
+    case ":$PATH:" in
+        *":$HOME/.local/bin:"*) ;;
+        *) echo "  note: ~/.local/bin isn't on PATH in this shell — add it" ;;
+    esac
+}
+
+install_packages_arch() {
+    echo "==> Packages (pacman + AUR via yay)"
+    command -v yay >/dev/null 2>&1 || {
+        echo "error: yay (AUR helper) not found — driftwm only exists on the AUR." >&2
+        echo "  Install yay first: https://github.com/Jguer/yay#installation" >&2
+        exit 1
+    }
+    yay -S --needed --noconfirm \
+        driftwm quickshell \
+        waybar kanshi swaync swayosd \
+        ghostty kitty fuzzel cliphist wl-clipboard thunar \
+        cava btop fastfetch jq hyprshot swayidle swaylock \
+        curl lm_sensors imagemagick \
+        eza zoxide pkgfile \
+        papirus-icon-theme bibata-cursor-git breeze-gtk
+
+    echo "==> pkgfile database (powers the command-not-found zsh plugin)"
+    sudo pkgfile --update
+    sudo systemctl enable --now pkgfile-update.timer 2>/dev/null || true
+}
+
+install_packages_fedora() {
+    echo "==> Packages (dnf + COPR)"
+    sudo dnf install -y dnf-plugins-core 'dnf-command(command-not-found)'
+
+    echo "==> COPR repos (driftwm's ecosystem isn't fully in Fedora's own repos yet)"
+    sudo dnf copr enable -y erikreider/SwayNotificationCenter
+    sudo dnf copr enable -y erikreider/swayosd
+    sudo dnf copr enable -y alternateved/ghostty
+    sudo dnf copr enable -y peterwu/rendezvous # bibata-cursor-themes
+
+    sudo dnf install -y \
+        quickshell \
+        waybar kanshi SwayNotificationCenter swayosd \
+        ghostty kitty fuzzel cliphist wl-clipboard thunar \
+        cava btop fastfetch jq swayidle swaylock \
+        curl lm_sensors ImageMagick \
+        eza zoxide \
+        papirus-icon-theme bibata-cursor-themes breeze-gtk \
+        xwayland-satellite \
+        git make gcc pkgconf-pkg-config rust cargo \
+        libseat-devel libdisplay-info-devel libinput-devel \
+        mesa-libgbm-devel libxkbcommon-devel wayland-devel
+
+    install_hyprshot_fedora
+    build_driftwm_from_source
+}
+
+install_sddm() {
+    echo "==> sddm"
+    case "$DISTRO" in
+        arch) yay -S --needed --noconfirm sddm ;;
+        fedora) sudo dnf install -y sddm ;;
+    esac
+    sudo systemctl enable sddm
+}
+
+# Theming applies the same sed this repo used to ask you to run by hand
+# (see README.md history) against ly's actual config file, so it only runs
+# once ly (and its default /etc/ly/config.ini) actually exists.
+install_ly() {
+    echo "==> ly"
+    case "$DISTRO" in
+        arch) yay -S --needed --noconfirm ly ;;
+        fedora)
+            sudo dnf copr enable -y fnux/ly
+            sudo dnf install -y ly
+            # ly runs on tty2 by default; a getty there would fight it for the seat.
+            sudo systemctl disable --now getty@tty2.service 2>/dev/null || true
+            ;;
+    esac
+    sudo systemctl enable ly
+
+    if [ -f /etc/ly/config.ini ]; then
+        echo "  theming /etc/ly/config.ini to dark_sea"
+        sudo sed -i \
+            -e 's/^bg = .*/bg = 0x002b323c/' \
+            -e 's/^fg = .*/fg = 0x00c9c4ab/' \
+            -e 's/^border_fg = .*/border_fg = 0x007089a0/' \
+            -e 's/^animation = .*/animation = doom/' \
+            -e 's/^doom_top_color = .*/doom_top_color = 0x002b323c/' \
+            -e 's/^doom_middle_color = .*/doom_middle_color = 0x007089a0/' \
+            -e 's/^doom_bottom_color = .*/doom_bottom_color = 0x00e2ddc4/' \
+            /etc/ly/config.ini
+    fi
+}
+
+choose_login_manager() {
+    echo "==> Login manager (optional — skip if you already have one)"
+    if [ ! -t 0 ]; then
+        echo "  no tty to prompt on, skipping (install sddm or ly by hand later if you want one)"
+        return 0
+    fi
+    printf '  [1] sddm   [2] ly (themed dark_sea)   [3] skip (default): '
+    read -r choice
+    case "$choice" in
+        1) install_sddm ;;
+        2) install_ly ;;
+        *) echo "  skipping" ;;
+    esac
+}
+
+case "$DISTRO" in
+    arch) install_packages_arch ;;
+    fedora) install_packages_fedora ;;
+esac
+
+choose_login_manager
 
 echo "==> Oh My Zsh (framework the plugins in .zshrc expect)"
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -60,6 +210,11 @@ else
     echo "  already installed, skipping"
 fi
 
+echo "==> Zsh plugins/theme (git-cloned — same on every distro, not a distro package)"
+clone_if_missing https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
+clone_if_missing https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
+clone_if_missing https://github.com/romkatv/powerlevel10k "$ZSH_CUSTOM/themes/powerlevel10k"
+
 echo "==> Configs (symlinked from this repo, existing files backed up)"
 for d in driftwm waybar ghostty kitty fuzzel swaync swaylock cava btop kanshi \
          gtk-3.0 gtk-4.0 fastfetch; do
@@ -68,10 +223,12 @@ done
 link ".config/kdeglobals" "$CONFIG_HOME/kdeglobals"
 link ".config/kcminputrc" "$CONFIG_HOME/kcminputrc"
 link ".config/zed/settings.json" "$CONFIG_HOME/zed/settings.json"
+link ".config/zed/themes/dark_sea.json" "$CONFIG_HOME/zed/themes/dark_sea.json"
 link ".zshrc" "$HOME/.zshrc"
 link ".p10k.zsh" "$HOME/.p10k.zsh"
 
 chmod +x "$CONFIG_HOME"/driftwm/scripts/*.sh 2>/dev/null || true
+chmod +x "$CONFIG_HOME"/driftwm/scripts/*.py 2>/dev/null || true
 chmod +x "$CONFIG_HOME"/waybar/scripts/*.sh 2>/dev/null || true
 
 echo "==> Monocraft (Nerd Font patched) — not packaged, fetched from upstream release"
@@ -86,11 +243,18 @@ pgrep -f "wl-paste --type text --watch cliphist" >/dev/null 2>&1 || \
 pgrep -f "wl-paste --type image --watch cliphist" >/dev/null 2>&1 || \
     (wl-paste --type image --watch cliphist store &) 2>/dev/null || true
 
-cat <<'EOF'
+cat <<EOF
 
 Done. Log out and back into driftwm to pick everything up (or manually
-restart waybar/swaync/qs and re-`fc-cache` if you're mid-session).
+restart waybar/swaync/qs and re-\`fc-cache\` if you're mid-session).
+$(if [ "$DISTRO" = fedora ]; then cat <<'FED'
 
-Not automated here — needs root, apply by hand if you want it:
-  - The ly login-screen colors (/etc/ly/config.ini). See README.md.
+Fedora-specific notes:
+  - swaync/swayosd/ghostty/bibata-cursor-themes came from third-party COPR
+    repos (enabled above) rather than Fedora's own — review them if that
+    matters to you: https://copr.fedorainfracloud.org/
+  - driftwm was built from source into /usr/local (see `sudo make uninstall`
+    in a fresh clone of https://github.com/malbiruk/driftwm to remove it).
+FED
+fi)
 EOF

@@ -12,11 +12,11 @@ Item {
     property bool highlighted: false
     signal clicked()
 
-    implicitHeight: 32
+    implicitHeight: 38
 
     Rectangle {
         anchors.fill: parent
-        radius: 8
+        radius: 12
         color: Theme.fg
         opacity: mouse.containsMouse ? Theme.hoverOpacity : root.highlighted ? 0.12 : 0
 
@@ -28,16 +28,16 @@ Item {
     RowLayout {
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.leftMargin: 10
-        anchors.rightMargin: 10
+        anchors.leftMargin: 12
+        anchors.rightMargin: 12
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 8
+        spacing: 10
 
         Text {
             text: root.icon
             visible: root.icon !== ""
             color: Theme.fg
-            font.pixelSize: Theme.fontSize
+            font.pixelSize: Theme.fontSize + 2
             font.family: Theme.fontFamily
         }
 

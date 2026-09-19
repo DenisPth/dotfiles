@@ -27,11 +27,15 @@ Tile {
         id: locationFile
         path: Quickshell.shellDir + "/weather_location.txt"
         printErrors: false
+        // Settings > погода writes this file directly (no IPC) — watch it so
+        // a change there shows up here without restarting quickshell.
+        watchChanges: true
         onLoaded: {
             root.locationOverride = text().trim()
             fetch.running = true
         }
         onLoadFailed: fetch.running = true
+        onFileChanged: reload()
     }
 
     function parse(text) {

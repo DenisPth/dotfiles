@@ -6,10 +6,11 @@ import Quickshell.Services.Mpris 0.1
 WrapperRectangle {
     id: root
 
-    // Стилизация под dark_sea (Glassmorphism)
-    color: "#2b323cc0"        // Базовый тон dark_sea с прозрачностью
+    // Стилизация под тему (Glassmorphism) — из Theme.qml, чтобы менялась
+    // вместе с обоями (см. apply_theme_colors.py) без правок этого файла.
+    color: Qt.rgba(Theme.bg.r, Theme.bg.g, Theme.bg.b, 0.75)        // Базовый тон с прозрачностью
     radius: 12                // Мягкое скругление углов
-    border.color: "#c9c4ab1a" // Тонкий тёплый блик по контуру панели
+    border.color: Qt.rgba(Theme.fg.r, Theme.fg.g, Theme.fg.b, 0.10) // Тонкий тёплый блик по контуру панели
     border.width: 1
 
     margin.left: 10
@@ -55,7 +56,7 @@ WrapperRectangle {
                     Text {
                         anchors.centerIn: parent
                         text: playerBlock.activePlayer && playerBlock.activePlayer.playbackStatus === MprisStatus.Playing ? "⏸" : "▶"
-                        color: "#7089a0" // Сине-серый акцент dark_sea
+                        color: Theme.accent // Акцентный цвет темы
                         font.pixelSize: 16
                     }
                     onClicked: if (playerBlock.activePlayer) playerBlock.activePlayer.toggle()
@@ -79,7 +80,7 @@ WrapperRectangle {
             Rectangle {
                 Layout.preferredWidth: 1
                 Layout.fillHeight: true
-                color: "#c9c4ab10"
+                color: Qt.rgba(Theme.fg.r, Theme.fg.g, Theme.fg.b, 0.06)
             }
 
             // Информация о текущем треке
@@ -88,7 +89,7 @@ WrapperRectangle {
                 text: playerBlock.activePlayer && playerBlock.activePlayer.metadata["xf86:title"]
                     ? (playerBlock.activePlayer.metadata["xf86:artist"] ? playerBlock.activePlayer.metadata["xf86:artist"] + " - " : "") + playerBlock.activePlayer.metadata["xf86:title"]
                     : "Музыка не играет"
-                color: "#e2ddc4" // Тёплый светлый — foam-color dark_sea
+                color: Theme.warm // Тёплый светлый акцент темы
                 font.pixelSize: 13
                 font.bold: true
                 elide: Text.ElideRight // Обрезает длинный текст троеточием
@@ -99,7 +100,7 @@ WrapperRectangle {
         // Заглушка на панели, если ни один плеер в системе не запущен
         Text {
             text: "Плеер не запущен"
-            color: "#4b5560" // Приглушённый серый текст, сливающийся с обоями
+            color: Theme.border // Приглушённый текст, сливающийся с обоями
             font.pixelSize: 13
             visible: Mpris.players.length === 0
             Layout.fillWidth: true
