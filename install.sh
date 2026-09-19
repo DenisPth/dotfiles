@@ -82,12 +82,23 @@ install_packages() {
         exit 1
     }
 
-    # pipewire-pulse and pulseaudio both own the same pulse-compatible
-    # socket — pacman refuses to install one over the other. This repo's
-    # audio stack is pipewire, so pulseaudio (if some other install put it
-    # there) has to go first, not get worked around.
-    pacman -Qq pulseaudio >/dev/null 2>&1 && \
-        sudo pacman -Rdd --noconfirm pulseaudio pulseaudio-bluetooth pulseaudio-alsa 2>/dev/null || true
+    # pipewire-pulse declares Conflicts=pulseaudio in pacman itself — with
+    # --noconfirm that removal prompt silently defaults to "no" and fails
+    # the whole install. This repo's audio stack is pipewire, so pulseaudio
+    # (if something else put it there) has to go first. Building the
+    # removal list from what's *actually* installed, not a fixed guess —
+    # pacman refuses to remove anything at all if even one named package in
+    # the command isn't installed, which was silently eating this whole
+    # step before.
+    pulse_installed=""
+    for p in pulseaudio pulseaudio-bluetooth pulseaudio-alsa pulseaudio-jack; do
+        pacman -Qq "$p" >/dev/null 2>&1 && pulse_installed="$pulse_installed $p"
+    done
+    if [ -n "$pulse_installed" ]; then
+        echo "  removing pulseaudio (conflicts with pipewire-pulse):$pulse_installed"
+        # shellcheck disable=SC2086
+        sudo pacman -Rdd --noconfirm $pulse_installed
+    fi
 
     # shellcheck disable=SC2086
     yay -S --needed --noconfirm \
