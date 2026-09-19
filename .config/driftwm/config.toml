@@ -176,29 +176,29 @@ blur = true
 # frosts the canvas behind that.
 [[window_rules]]
 app_id = "thunar"
-opacity = 0.92
+opacity = 0.78
 blur = true
 
 [[window_rules]]
 app_id = "zen"
-opacity = 0.95
+opacity = 0.78
 blur = true
 
 [[window_rules]]
 app_id = "org.telegram.desktop"
-opacity = 0.92
+opacity = 0.78
 blur = true
 
 [[window_rules]]
 app_id = "Throne"
-opacity = 0.92
+opacity = 0.78
 blur = true
 
 # Unverified app_id (zed isn't installed on the machine this was written
 # on) — run `driftwm msg state` with Zed open and fix this if it's wrong.
 [[window_rules]]
 app_id = "dev.zed.Zed"
-opacity = 0.95
+opacity = 0.78
 blur = true
 
 [[window_rules]]
