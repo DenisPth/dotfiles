@@ -62,12 +62,56 @@ ColumnLayout {
 
     Process { id: rewrite }
 
-    Text {
-        text: "обои — клик применяет сразу"
-        color: Theme.fg
-        opacity: Theme.dim
-        font.pixelSize: Theme.smallFontSize
-        font.family: Theme.fontFamily
+    // Extension decides driftwm's [background] `type`: an image becomes
+    // `wallpaper` (single image, aspect-preserving cover — see driftwm's
+    // README on background modes), a shader stays `shader` like the
+    // bundled ones, just pointed outside wallpapers/.
+    readonly property var imageExts: ["png", "jpg", "jpeg", "webp", "bmp"]
+
+    function applyCustom(path) {
+        const ext = path.split(".").pop().toLowerCase()
+        const type = root.imageExts.includes(ext) ? "wallpaper" : "shader"
+        rewrite.command = ["sh", "-c",
+            `sed -i -e 's|^type = ".*"|type = "${type}"|' -e 's|^path = ".*"|path = "${path}"|' ~/.config/driftwm/config.toml && ~/.config/driftwm/scripts/apply_theme_colors.py '${path}' && driftwm msg action reload-config`]
+        rewrite.running = true
+        root.active = path
+    }
+
+    function pickCustom() {
+        picker.command = ["zenity", "--file-selection", "--title=Выбери файл обоев",
+            "--file-filter=Изображения | *.png *.jpg *.jpeg *.webp *.bmp",
+            "--file-filter=GLSL шейдер | *.glsl"]
+        picker.running = true
+    }
+
+    Process {
+        id: picker
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const path = text.trim()
+                if (path) root.applyCustom(path)
+            }
+        }
+    }
+
+    RowLayout {
+        Layout.fillWidth: true
+        spacing: 8
+
+        Text {
+            Layout.fillWidth: true
+            text: "обои — клик применяет сразу"
+            color: Theme.fg
+            opacity: Theme.dim
+            font.pixelSize: Theme.smallFontSize
+            font.family: Theme.fontFamily
+        }
+
+        FlatButton {
+            text: "+ добавить обои"
+            fontSize: Theme.smallFontSize
+            onClicked: root.pickCustom()
+        }
     }
 
     Flickable {

@@ -105,13 +105,13 @@ install_packages() {
         driftwm quickshell matugen \
         waybar kanshi swaync swayosd wlr-randr networkmanager \
         ghostty kitty fuzzel cliphist wl-clipboard thunar \
-        cava btop fastfetch jq hyprshot swayidle swaylock \
+        cava btop fastfetch jq hyprshot swayidle swaylock-effects \
         curl lm_sensors imagemagick brightnessctl \
         slurp grim wf-recorder \
         eza zoxide pkgfile pacman-contrib \
         papirus-icon-theme bibata-cursor-git breeze-gtk \
         bluez bluez-utils pipewire pipewire-pulse pipewire-alsa wireplumber upower \
-        power-profiles-daemon pavucontrol \
+        power-profiles-daemon pavucontrol zenity \
         $EXTRA_PACKAGES
 
     echo "==> pkgfile database (powers the command-not-found zsh plugin)"
