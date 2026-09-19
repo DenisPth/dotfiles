@@ -225,10 +225,18 @@ chmod +x "$CONFIG_HOME"/driftwm/scripts/*.py 2>/dev/null || true
 chmod +x "$CONFIG_HOME"/waybar/scripts/*.sh 2>/dev/null || true
 
 echo "==> Monocraft (Nerd Font patched) — not packaged, fetched from upstream release"
-mkdir -p "$HOME/.local/share/fonts/Monocraft"
-curl -fsL -o "$HOME/.local/share/fonts/Monocraft/Monocraft-nerd-fonts-patched.ttc" \
-    "https://github.com/IdreesInc/Monocraft/releases/latest/download/Monocraft-nerd-fonts-patched.ttc"
-fc-cache -f "$HOME/.local/share/fonts" >/dev/null
+font_file="$HOME/.local/share/fonts/Monocraft/Monocraft-nerd-fonts-patched.ttc"
+if fc-list | grep -qi monocraft; then
+    echo "  already installed (fontconfig already knows it), skipping download"
+elif [ -f "$font_file" ]; then
+    echo "  file already downloaded, just re-caching"
+    fc-cache -f "$HOME/.local/share/fonts" >/dev/null
+else
+    mkdir -p "$HOME/.local/share/fonts/Monocraft"
+    curl -fsL -o "$font_file" \
+        "https://github.com/IdreesInc/Monocraft/releases/latest/download/Monocraft-nerd-fonts-patched.ttc"
+    fc-cache -f "$HOME/.local/share/fonts" >/dev/null
+fi
 
 echo "==> GTK4/gsettings (icon theme, font, cursor)"
 # The gtk-3.0/settings.ini just linked in covers GTK3 and Qt/KDE apps, but
