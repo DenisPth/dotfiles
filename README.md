@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="image.png" alt="Превью проекта">
+</p>
+
+
 # dotfiles — dark_sea
 
 A driftwm rice built around `dark_sea.glsl` (dark teal water, warm cream
