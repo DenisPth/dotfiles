@@ -116,7 +116,7 @@ install_packages_arch() {
 
 install_packages_fedora() {
     echo "==> Packages (dnf + COPR)"
-    sudo dnf install -y dnf-plugins-core 'dnf-command(command-not-found)'
+    sudo dnf install -y dnf-plugins-core PackageKit-command-not-found
 
     echo "==> COPR repos (driftwm's ecosystem isn't fully in Fedora's own repos yet)"
     sudo dnf copr enable -y erikreider/SwayNotificationCenter
