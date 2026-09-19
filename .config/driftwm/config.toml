@@ -109,6 +109,9 @@ remember_layout_per_window = true
 "mod+shift+s" = "spawn hyprshot -m region --clipboard-only"
 # Toggle screen recording for TikTok clips (region-picked, saved to ~/Videos/tiktok).
 "mod+shift+v" = "spawn ~/.config/driftwm/scripts/record_clip.sh"
+# Toggle the focused window opaque — for video, which a blurred/see-through
+# player window ruins (the compositor can't exclude just the video element).
+"mod+shift+o" = "spawn ~/.config/driftwm/scripts/toggle_opacity.sh"
 "mod+alt+shift+q" = "exec systemctl poweroff"
 "Super+L" = "exec swaylock"
 "mod + a" = "spawn zen-browser"
@@ -237,6 +240,7 @@ XCURSOR_SIZE = "24"
 # ctrl+print                      — скриншот активного окна в буфер обмена
 # mod+shift+s                     — hyprshot: скриншот области в буфер обмена
 # mod+shift+v                     — запись видео с экрана (тумблер, ~/Videos/tiktok)
+# mod+shift+o                     — сделать окно непрозрачным (тумблер, для видео)
 # mod+alt+shift+q                 — systemctl poweroff (выключение системы)
 #
 # --- Медиа-клавиши (через swayosd) ---
