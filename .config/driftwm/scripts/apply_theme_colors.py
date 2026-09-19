@@ -716,10 +716,14 @@ def driftwm_config(t):
 
 
 def quickshell_theme(t):
-    p = CFG / "driftwm/quickshell/Theme.qml"
-    for prop, key in (("bg", "BG"), ("border", "BORDER"), ("fg", "FG"),
-                       ("track", "TRACK"), ("accent", "ACCENT"), ("warm", "WARM")):
-        patch(p, rf'(readonly property color {prop}: )"#[0-9a-fA-F]{{6,8}}"', rf'\1"{t[key]}"')
+    # A data file, not Theme.qml itself — editing the .qml source live
+    # makes quickshell hot-reload the whole singleton, which resets every
+    # window bound to it (Settings included) back to its declared state
+    # and closes it. Theme.qml just watches this file instead.
+    w(CFG / "driftwm/quickshell/theme_colors.json", json.dumps({
+        "bg": t["BG"], "border": t["BORDER"], "fg": t["FG"],
+        "track": t["TRACK"], "accent": t["ACCENT"], "warm": t["WARM"],
+    }, indent=2) + "\n")
 
 
 def zshrc(t):

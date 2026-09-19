@@ -24,15 +24,45 @@ Singleton {
     }
 
     // dark_sea — та же палитра, что у driftwm-декораций/ghostty/waybar/kitty.
-    // bg/border/fg/track/accent/warm перегенерируются целиком при смене обоев
-    // (см. ~/.config/driftwm/scripts/apply_theme_colors.py) — quickshell сам
-    // подхватывает файл живьём, отдельной перезагрузки не нужно.
-    readonly property color bg: "#2a3841"
-    readonly property color border: "#5a636a"
-    readonly property color fg: "#e3e7eb"
-    readonly property color track: "#394149"
-    readonly property color accent: "#97d6ff"
-    readonly property color warm: "#d2c7f0"
+    // Values load from theme_colors.json, NOT hardcoded here — editing this
+    // .qml file live (which apply_theme_colors.py used to do directly)
+    // makes quickshell hot-reload the whole singleton, which resets every
+    // window bound to it back to its declared state, closing Settings
+    // (visible: false in its own source) out from under whoever had it
+    // open. Reading a plain data file via FileView.watchChanges is just a
+    // property update, not a QML reload, so nothing else so much as
+    // flickers.
+    property color bg: "#2a3841"
+    property color border: "#5a636a"
+    property color fg: "#e3e7eb"
+    property color track: "#394149"
+    property color accent: "#97d6ff"
+    property color warm: "#d2c7f0"
+
+    FileView {
+        id: colorsFile
+        path: Quickshell.shellDir + "/theme_colors.json"
+        printErrors: false
+        watchChanges: true
+        onLoaded: theme.applyColors(text())
+        onFileChanged: reload()
+    }
+
+    function applyColors(json) {
+        let c
+        try {
+            c = JSON.parse(json)
+        } catch (e) {
+            return
+        }
+        if (c.bg) theme.bg = c.bg
+        if (c.border) theme.border = c.border
+        if (c.fg) theme.fg = c.fg
+        if (c.track) theme.track = c.track
+        if (c.accent) theme.accent = c.accent
+        if (c.warm) theme.warm = c.warm
+    }
+
     readonly property real dim: 0.5
     readonly property real hoverOpacity: 0.1
     readonly property int fontSize: 14
