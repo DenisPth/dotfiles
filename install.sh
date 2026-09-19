@@ -81,6 +81,14 @@ install_packages() {
         echo "  Install yay first: https://github.com/Jguer/yay#installation" >&2
         exit 1
     }
+
+    # pipewire-pulse and pulseaudio both own the same pulse-compatible
+    # socket — pacman refuses to install one over the other. This repo's
+    # audio stack is pipewire, so pulseaudio (if some other install put it
+    # there) has to go first, not get worked around.
+    pacman -Qq pulseaudio >/dev/null 2>&1 && \
+        sudo pacman -Rdd --noconfirm pulseaudio pulseaudio-bluetooth pulseaudio-alsa 2>/dev/null || true
+
     # shellcheck disable=SC2086
     yay -S --needed --noconfirm \
         driftwm quickshell matugen \
@@ -92,6 +100,7 @@ install_packages() {
         eza zoxide pkgfile pacman-contrib \
         papirus-icon-theme bibata-cursor-git breeze-gtk \
         bluez bluez-utils pipewire pipewire-pulse pipewire-alsa wireplumber upower \
+        power-profiles-daemon pavucontrol \
         $EXTRA_PACKAGES
 
     echo "==> pkgfile database (powers the command-not-found zsh plugin)"
@@ -101,7 +110,7 @@ install_packages() {
     # Bluetooth/Wi-Fi/battery tiles in quickshell talk to these over D-Bus
     # directly (Quickshell.Bluetooth/UPower services), not a CLI — so
     # nothing else in this script ever starts them.
-    sudo systemctl enable --now NetworkManager bluetooth 2>/dev/null || true
+    sudo systemctl enable --now NetworkManager bluetooth power-profiles-daemon 2>/dev/null || true
     systemctl --user enable --now pipewire pipewire-pulse wireplumber 2>/dev/null || true
 }
 

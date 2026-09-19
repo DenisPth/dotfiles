@@ -13,7 +13,7 @@
     // driftwm (см. scripts/driftwm-window.sh).
     "modules-left": ["custom/window"],
     "modules-center": ["clock"],
-    "modules-right": ["network", "bluetooth", "pulseaudio", "battery", "tray"],
+    "modules-right": ["network", "bluetooth", "pulseaudio", "custom/power-profile", "battery", "tray"],
 
     "custom/window": {
         "exec": "~/.config/waybar/scripts/driftwm-window.sh",
@@ -43,6 +43,14 @@
         "format": "{status}",
         "format-disabled": "",
         "format-connected": "{num_connections}"
+    },
+
+    "custom/power-profile": {
+        "exec": "~/.config/waybar/scripts/power_profile.sh",
+        "on-click": "~/.config/waybar/scripts/power_profile.sh --cycle",
+        "interval": 5,
+        "tooltip": true,
+        "tooltip-format": "клик — сменить профиль питания"
     },
 
     "battery": {
