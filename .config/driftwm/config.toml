@@ -34,8 +34,8 @@ restore_windows = true
 restore_camera = true
 
 [background]
-type = "shader"
-path = "~/.config/driftwm/wallpapers/dark_sea.glsl"
+type = "wallpaper"
+path = "~/.config/driftwm/wallpapers/custom/wallpaper.png"
 #path = "~/.config/driftwm/wallpapers/animated/fast_smoke.glsl"
 #path = "~/.config/driftwm/wallpapers/textured/mirrored_parallax.glsl"
 
@@ -169,6 +169,36 @@ blur = true
 
 [[window_rules]]
 app_id = "swayosd"
+blur = true
+
+# Regular apps, unlike the terminals above, have no transparency setting of
+# their own — opacity here is what actually makes them see-through, blur
+# frosts the canvas behind that.
+[[window_rules]]
+app_id = "thunar"
+opacity = 0.92
+blur = true
+
+[[window_rules]]
+app_id = "zen"
+opacity = 0.95
+blur = true
+
+[[window_rules]]
+app_id = "org.telegram.desktop"
+opacity = 0.92
+blur = true
+
+[[window_rules]]
+app_id = "Throne"
+opacity = 0.92
+blur = true
+
+# Unverified app_id (zed isn't installed on the machine this was written
+# on) — run `driftwm msg state` with Zed open and fix this if it's wrong.
+[[window_rules]]
+app_id = "dev.zed.Zed"
+opacity = 0.95
 blur = true
 
 [[window_rules]]
