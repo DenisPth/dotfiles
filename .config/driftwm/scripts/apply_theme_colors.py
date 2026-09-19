@@ -520,8 +520,8 @@ ring-wrong-color={red}ff
 key-hl-color={fg}ff
 bs-hl-color={red}ff
 
-text-color={fg}ff
-text-clear-color={fg}ff
+text-color=ffffffff
+text-clear-color=ffffffff
 text-ver-color={bg}ff
 text-wrong-color={bg}ff
 """)

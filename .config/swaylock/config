@@ -41,7 +41,7 @@ ring-wrong-color=b5665fff
 key-hl-color=e3e7ebff
 bs-hl-color=b5665fff
 
-text-color=e3e7ebff
-text-clear-color=e3e7ebff
+text-color=ffffffff
+text-clear-color=ffffffff
 text-ver-color=2a3841ff
 text-wrong-color=2a3841ff
