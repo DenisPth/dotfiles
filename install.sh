@@ -100,6 +100,13 @@ install_packages() {
         sudo pacman -Rdd --noconfirm $pulse_installed
     fi
 
+    # Same story: swaylock-effects (the fork whose extra options
+    # swaylock/config actually uses) conflicts with plain swaylock.
+    if pacman -Qq swaylock >/dev/null 2>&1; then
+        echo "  removing swaylock (conflicts with swaylock-effects)"
+        sudo pacman -Rdd --noconfirm swaylock
+    fi
+
     # shellcheck disable=SC2086
     yay -S --needed --noconfirm \
         driftwm quickshell matugen \
