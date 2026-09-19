@@ -13,6 +13,7 @@ ClockSection 1.0 ClockSection.qml
 Cpu 1.0 Cpu.qml
 Dashboard 1.0 Dashboard.qml
 Disk 1.0 Disk.qml
+Dim 1.0 Dim.qml
 DisplaySection 1.0 DisplaySection.qml
 FlatButton 1.0 FlatButton.qml
 KbdLayout 1.0 KbdLayout.qml

@@ -5,4 +5,5 @@ ShellRoot {
     Dashboard {}
     Settings {}
     PlayerPopup {}
+    Dim {}
 }
