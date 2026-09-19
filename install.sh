@@ -81,17 +81,20 @@ install_packages() {
     # shellcheck disable=SC2086
     yay -S --needed --noconfirm \
         driftwm quickshell matugen \
-        waybar kanshi swaync swayosd wlr-randr \
+        waybar kanshi swaync swayosd wlr-randr networkmanager \
         ghostty kitty fuzzel cliphist wl-clipboard thunar \
         cava btop fastfetch jq hyprshot swayidle swaylock \
         curl lm_sensors imagemagick brightnessctl \
-        eza zoxide pkgfile \
+        slurp grim wf-recorder \
+        eza zoxide pkgfile pacman-contrib \
         papirus-icon-theme bibata-cursor-git breeze-gtk \
         $EXTRA_PACKAGES
 
     echo "==> pkgfile database (powers the command-not-found zsh plugin)"
     sudo pkgfile --update
     sudo systemctl enable --now pkgfile-update.timer 2>/dev/null || true
+
+    sudo systemctl enable --now NetworkManager 2>/dev/null || true
 }
 
 install_sddm() {

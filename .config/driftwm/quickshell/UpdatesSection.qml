@@ -4,11 +4,10 @@ import Quickshell
 import Quickshell.Io
 
 // Two independent blocks: dotfiles git status (read-only — never pulls or
-// pushes, this repo is local-only, see its README) and distro package
-// updates (Arch/Fedora, matching install.sh's distro detection). The distro
-// block only checks — the actual upgrade needs a password, so "обновить"
-// just opens a terminal with the right command rather than trying to run
-// sudo from inside quickshell.
+// pushes, this repo is local-only, see its README) and Arch package
+// updates. The package block only checks — the actual upgrade needs a
+// password, so "обновить" just opens a terminal with the right command
+// rather than trying to run sudo from inside quickshell.
 ColumnLayout {
     id: root
     spacing: 6
@@ -19,7 +18,6 @@ ColumnLayout {
     property bool pulling: false
     readonly property string repo: Quickshell.env("HOME") + "/dotfiles"
 
-    property string distro: ""
     property string pkgStatus: "…"
     property bool pkgChecking: false
 
@@ -148,32 +146,14 @@ ColumnLayout {
 
     function checkPackages() {
         root.pkgChecking = true
-        distroDetect.running = true
-    }
-
-    Process {
-        id: distroDetect
-        command: ["sh", "-c", ". /etc/os-release; echo \"$ID $ID_LIKE\""]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const ids = text.trim().toLowerCase()
-                root.distro = ids.includes("fedora") ? "fedora" : ids.includes("arch") ? "arch" : ""
-                if (root.distro) {
-                    pkgCount.running = true
-                } else {
-                    root.pkgChecking = false
-                    root.pkgStatus = "неизвестный дистрибутив"
-                }
-            }
-        }
+        pkgCount.running = true
     }
 
     Process {
         id: pkgCount
-        command: ["sh", "-c",
-            root.distro === "fedora"
-                ? "dnf check-update -q 2>/dev/null | grep -c ."
-                : "(checkupdates 2>/dev/null || yay -Qu 2>/dev/null) | grep -c ."]
+        // checkupdates (pacman-contrib) needs no root and doesn't touch the
+        // local sync db; yay -Qu is the fallback if it's missing.
+        command: ["sh", "-c", "(checkupdates 2>/dev/null || yay -Qu 2>/dev/null) | grep -c ."]
         stdout: StdioCollector {
             onStreamFinished: {
                 root.pkgChecking = false
@@ -186,8 +166,7 @@ ColumnLayout {
     Process { id: upgradeTerminal }
 
     function openUpgradeTerminal() {
-        const cmd = root.distro === "fedora" ? "sudo dnf upgrade" : "yay -Syu"
-        upgradeTerminal.command = ["ghostty", "-e", "sh", "-c", `${cmd}; exec $SHELL`]
+        upgradeTerminal.command = ["ghostty", "-e", "sh", "-c", "yay -Syu; exec $SHELL"]
         upgradeTerminal.running = true
     }
 }
