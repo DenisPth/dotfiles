@@ -187,10 +187,18 @@ fi
 
 echo "==> Default shell"
 current_shell="$(getent passwd "$(id -un)" | cut -d: -f7)"
-zsh_path="$(command -v zsh)"
+# `command -v zsh` can resolve to /usr/sbin/zsh (a compat symlink on
+# Arch) — chsh rejects anything not listed verbatim in /etc/shells, which
+# only names /bin/zsh and /usr/bin/zsh. readlink -f follows the symlink to
+# the real binary path, which is what's actually listed there.
+zsh_path="$(readlink -f "$(command -v zsh)")"
 if [ "$current_shell" != "$zsh_path" ]; then
-    echo "  switching from $current_shell to $zsh_path (takes effect next login)"
-    chsh -s "$zsh_path"
+    if grep -qxF "$zsh_path" /etc/shells; then
+        echo "  switching from $current_shell to $zsh_path (takes effect next login)"
+        chsh -s "$zsh_path"
+    else
+        echo "  $zsh_path isn't in /etc/shells, skipping — run chsh yourself"
+    fi
 else
     echo "  already zsh"
 fi
