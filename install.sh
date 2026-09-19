@@ -54,7 +54,7 @@ choose_optional_apps() {
     EXTRA_PACKAGES=""
     if [ ! -t 0 ]; then
         echo "  no tty to prompt on, installing all of them by default"
-        EXTRA_PACKAGES="zed telegram-desktop zen-browser-bin libreoffice-fresh"
+        EXTRA_PACKAGES="zed telegram-desktop zen-browser-bin libreoffice-fresh throne-bin"
         return 0
     fi
     ask() {
@@ -70,6 +70,7 @@ choose_optional_apps() {
     ask "Telegram Desktop? (mod+t)" telegram-desktop
     ask "Zen Browser? (mod+a)" zen-browser-bin
     ask "LibreOffice?" libreoffice-fresh
+    ask "Throne (VLESS/VMess/etc. proxy client)?" throne-bin
 }
 
 install_packages() {
@@ -209,6 +210,53 @@ if command -v gsettings >/dev/null 2>&1; then
     gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 else
     echo "  gsettings not found, skipping (install gsettings-desktop-schemas/dconf)"
+fi
+
+echo "==> Display (only works if driftwm is already running — skipped on a bare-TTY first install)"
+# Picks the mode with the highest resolution, then highest refresh rate at
+# that resolution, applies it live, and asks for a scale factor — then
+# writes both into config.toml's [[outputs]] and kanshi/config so they
+# survive a reboot, the same two places DisplaySection.qml's own apply()
+# writes to.
+if command -v wlr-randr >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+    best="$(wlr-randr --json 2>/dev/null | jq -r '
+        .[] | select(.enabled) | .name as $n |
+        (.modes | (map(.width * .height) | max)) as $maxres |
+        ([.modes[] | select(.width * .height == $maxres)] | max_by(.refresh)) as $m |
+        "\($n) \($m.width) \($m.height) \($m.refresh) \($m.refresh | round)"
+    ' 2>/dev/null | head -n1)"
+    if [ -n "$best" ]; then
+        set -- $best
+        out="$1" w="$2" h="$3" r="$4" r_int="$5"
+        mode="${w}x${h}@${r_int}"
+        echo "  $out: best mode is $mode"
+        wlr-randr --output "$out" --mode "${w}x${h}@${r}Hz" 2>/dev/null || true
+
+        scale="1.0"
+        if [ -t 0 ]; then
+            printf '  Scale? (e.g. 1.0, 1.25, 1.5, 2.0) [1.0]: '
+            read -r reply
+            case "$reply" in
+                "") ;;
+                [0-9]*.[0-9]*|[0-9]*) scale="$reply" ;;
+                *) echo "  not a number, keeping 1.0" ;;
+            esac
+        fi
+        wlr-randr --output "$out" --scale "$scale" 2>/dev/null || true
+
+        sed -i \
+            -e "s|^name = .*|name = \"$out\"|" \
+            -e "s|^mode = .*|mode = \"$mode\"|" \
+            -e "s|^scale = .*|scale = $scale|" \
+            "$CONFIG_HOME/driftwm/config.toml"
+        [ -f "$CONFIG_HOME/kanshi/config" ] && \
+            sed -i "s|output [A-Za-z0-9-]* mode [0-9x@.]*|output $out mode $mode|" "$CONFIG_HOME/kanshi/config"
+        kanshictl reload 2>/dev/null || true
+    else
+        echo "  no enabled output found (driftwm not running?), skipping"
+    fi
+else
+    echo "  wlr-randr/jq not found, skipping"
 fi
 
 echo "==> Clipboard history watchers (for this session; the driftwm autostart entries in config.toml cover future logins)"
