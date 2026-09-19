@@ -7,3 +7,4 @@
 .config/driftwm/quickshell/notes.txt
 .config/driftwm/quickshell/weather_location.txt
 .config/driftwm/quickshell/clock_format.txt
+__pycache__/
