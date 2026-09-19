@@ -18,7 +18,12 @@ autostart = [
     "wl-paste --type image --watch cliphist store",
     # Автоблокировка через 5 минут бездействия + перед уходом в сон (раньше
     # блокировка срабатывала только перед сном).
-    "swayidle -w timeout 1800 'swaylock -c 2a3841 --inside-color 394149 --ring-color 5a636a --text-color e3e7eb --key-hl-color 97d6ff' before-sleep 'swaylock -c 2a3841 --inside-color 394149 --ring-color 5a636a --text-color e3e7eb --key-hl-color 97d6ff'",
+    #
+    # after-resume: amdgpu часто поднимает DP-1 обратно на preferred-режиме
+    # монитора (60 Hz) вместо разогнанных 165 Hz после выхода из сна — форсим
+    # нужный режим и на всякий случай будим экран (--on), если он остался в
+    # DPMS off.
+    "swayidle -w timeout 1800 'swaylock -c 2a3841 --inside-color 394149 --ring-color 5a636a --text-color e3e7eb --key-hl-color 97d6ff' before-sleep 'swaylock -c 2a3841 --inside-color 394149 --ring-color 5a636a --text-color e3e7eb --key-hl-color 97d6ff' after-resume 'wlr-randr --output DP-1 --on --mode 1920x1080@165'",
 ]
 
 # Sloppy focus: windows don't overlap, so a cursor over a window is deliberate.
