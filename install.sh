@@ -90,13 +90,18 @@ install_packages() {
         slurp grim wf-recorder \
         eza zoxide pkgfile pacman-contrib \
         papirus-icon-theme bibata-cursor-git breeze-gtk \
+        bluez bluez-utils pipewire pipewire-pulse pipewire-alsa wireplumber upower \
         $EXTRA_PACKAGES
 
     echo "==> pkgfile database (powers the command-not-found zsh plugin)"
     sudo pkgfile --update
     sudo systemctl enable --now pkgfile-update.timer 2>/dev/null || true
 
-    sudo systemctl enable --now NetworkManager 2>/dev/null || true
+    # Bluetooth/Wi-Fi/battery tiles in quickshell talk to these over D-Bus
+    # directly (Quickshell.Bluetooth/UPower services), not a CLI — so
+    # nothing else in this script ever starts them.
+    sudo systemctl enable --now NetworkManager bluetooth 2>/dev/null || true
+    systemctl --user enable --now pipewire pipewire-pulse wireplumber 2>/dev/null || true
 }
 
 install_sddm() {
