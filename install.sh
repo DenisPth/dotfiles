@@ -98,7 +98,7 @@ install_packages() {
     # shellcheck disable=SC2086
     yay -S --needed --noconfirm \
         driftwm quickshell matugen \
-        waybar kanshi swaync swayosd wlr-randr networkmanager \
+        waybar swaync swayosd wlr-randr networkmanager \
         ghostty kitty fuzzel cliphist wl-clipboard thunar \
         cava btop fastfetch jq hyprshot swayidle swaylock-effects \
         curl lm_sensors imagemagick brightnessctl \
@@ -242,9 +242,9 @@ command -v xfconf-query >/dev/null 2>&1 && \
 echo "==> Display (only works if driftwm is already running — skipped on a bare-TTY first install)"
 # Picks the mode with the highest resolution, then highest refresh rate at
 # that resolution, applies it live, and asks for a scale factor — then
-# writes both into config.toml's [[outputs]] and kanshi/config so they
-# survive a reboot, the same two places DisplaySection.qml's own apply()
-# writes to.
+# persists both into config.toml's [[outputs]] via set_output_mode.py (the
+# same script DisplaySection.qml's own apply() calls), matched by connector
+# name so it only ever touches this machine's own entry.
 if command -v wlr-randr >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
     best="$(wlr-randr --json 2>/dev/null | jq -r '
         .[] | select(.enabled) | .name as $n |
@@ -271,14 +271,7 @@ if command -v wlr-randr >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
         fi
         wlr-randr --output "$out" --scale "$scale" 2>/dev/null || true
 
-        sed -i \
-            -e "s|^name = .*|name = \"$out\"|" \
-            -e "s|^mode = .*|mode = \"$mode\"|" \
-            -e "s|^scale = .*|scale = $scale|" \
-            "$CONFIG_HOME/driftwm/config.toml"
-        [ -f "$CONFIG_HOME/kanshi/config" ] && \
-            sed -i "s|output [A-Za-z0-9-]* mode [0-9x@.]*|output $out mode $mode|" "$CONFIG_HOME/kanshi/config"
-        kanshictl reload 2>/dev/null || true
+        "$CONFIG_HOME/driftwm/scripts/set_output_mode.py" "$out" "$mode" "$scale"
     else
         echo "  no enabled output found (driftwm not running?), skipping"
     fi

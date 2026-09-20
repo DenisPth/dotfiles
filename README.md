@@ -49,9 +49,11 @@ overwritten). Edit the live config afterward and you're editing this repo.
 - **ghostty** (primary) **/ kitty** — Monocraft, dark_sea 16-color palette.
 - **fuzzel** — launcher + `mod+v` clipboard picker (cliphist), Papirus-Dark
   icons.
-- **swaync**, **swaylock**, **cava**, **btop**, **kanshi**, **GTK 3/4**,
+- **swaync**, **swaylock**, **cava**, **btop**, **GTK 3/4**,
   **kdeglobals/kcminputrc** (Bibata-Modern-Classic cursor, Papirus-Dark
-  icons), **fastfetch**, **Zed** ("Dark Sea" theme).
+  icons), **fastfetch**, **Zed** ("Dark Sea" theme). Multi-monitor/multi-machine
+  output config (mode, scale) lives directly in driftwm's own `config.toml`
+  `[[outputs]]` table, matched by connector name — no kanshi needed.
 - **.zshrc / .p10k.zsh** — Oh My Zsh (fetched by `install.sh`, not vendored
   in this repo) + Powerlevel10k, autosuggestions and syntax highlighting
   from system packages, ~18 OMZ plugins (git, sudo, extract, fzf, zoxide,

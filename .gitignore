@@ -2,10 +2,11 @@
 # session) — git is the history now, these are just noise.
 *.bak*
 
-# Per-machine marker: the commit last applied by update.sh/install.sh, used
-# by .zshrc's version check to notice when the repo has moved ahead of what
-# is actually installed on this machine. Not shared state — never commit it.
+# Per-machine markers: the commit last applied by update.sh/install.sh, and
+# the boot_id .zshrc last ran the update check on (so it only asks once per
+# boot, not once per terminal). Not shared state — never commit these.
 .installed_version
+.last_checked_boot
 
 # Notes widget's scratch content, weather's location override, clock's
 # 12h/24h choice — personal, not part of the rice.

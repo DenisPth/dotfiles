@@ -148,7 +148,7 @@ dotfiles() {
         status)
             timeout 3 git -C "$repo" fetch --quiet 2>/dev/null
             target="$(git -C "$repo" rev-parse '@{u}' 2>/dev/null || git -C "$repo" rev-parse HEAD)"
-            installed="$(<"$repo/.installed_version" 2>/dev/null)"
+            installed="$(cat "$repo/.installed_version" 2>/dev/null)"
             echo "на GitHub:    v$(git -C "$repo" rev-list --count "$target")  $(git -C "$repo" log -1 --format='%h %s' "$target")"
             if [[ -n "$installed" ]]; then
                 echo "установлено:  v$(git -C "$repo" rev-list --count "$installed")  $(git -C "$repo" log -1 --format='%h %s' "$installed")"
@@ -176,10 +176,17 @@ dotfiles() {
 ## actually applied on this machine. Only interactive+tty shells get asked,
 ## so this stays silent under scp, VS Code remote, cron, etc. The fetch is
 ## best-effort (3s timeout) — no network just means no prompt this time.
-if [[ -o interactive && -t 0 && -d ~/dotfiles/.git ]]; then
+## Runs once per boot (tracked via /proc's boot_id, a fresh random value
+## every boot) — opening a second/third terminal in the same session
+## doesn't ask again, only the next reboot/login does.
+_df_boot_marker=~/dotfiles/.last_checked_boot
+_df_boot_id="$(</proc/sys/kernel/random/boot_id 2>/dev/null)"
+if [[ -o interactive && -t 0 && -d ~/dotfiles/.git && -n "$_df_boot_id" \
+      && "$_df_boot_id" != "$(cat "$_df_boot_marker" 2>/dev/null)" ]]; then
+    echo "$_df_boot_id" > "$_df_boot_marker"
     timeout 3 git -C ~/dotfiles fetch --quiet 2>/dev/null
     _df_target="$(git -C ~/dotfiles rev-parse '@{u}' 2>/dev/null || git -C ~/dotfiles rev-parse HEAD 2>/dev/null)"
-    _df_installed="$(<~/dotfiles/.installed_version 2>/dev/null)"
+    _df_installed="$(cat ~/dotfiles/.installed_version 2>/dev/null)"
     if [[ -n "$_df_target" && "$_df_target" != "$_df_installed" ]]; then
         _df_n="$(git -C ~/dotfiles rev-list --count "${_df_installed:-$_df_target}..$_df_target" 2>/dev/null)"
         _df_v="$(git -C ~/dotfiles rev-list --count "$_df_target" 2>/dev/null)"
@@ -192,3 +199,4 @@ if [[ -o interactive && -t 0 && -d ~/dotfiles/.git ]]; then
     fi
     unset _df_target _df_installed _df_n _df_v _df_reply
 fi
+unset _df_boot_marker _df_boot_id

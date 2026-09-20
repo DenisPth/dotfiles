@@ -32,7 +32,7 @@ link() {
 }
 
 echo "==> Configs (symlinked from this repo, existing files backed up)"
-for d in driftwm waybar ghostty kitty fuzzel swaync swaylock cava btop kanshi \
+for d in driftwm waybar ghostty kitty fuzzel swaync swaylock cava btop \
          gtk-3.0 gtk-4.0 fastfetch; do
     link ".config/$d" "$CONFIG_HOME/$d"
 done

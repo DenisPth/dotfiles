@@ -8,7 +8,6 @@
 
 autostart = [
     "waybar",
-    "kanshi",
     "swaync",
     "swayosd-server --top-margin 0.95",
     "qs -p ~/.config/driftwm/quickshell",
@@ -231,10 +230,22 @@ blur = true
 app_id = "waybar"
 widget = true
 
+# Per-machine — driftwm matches each [[outputs]] entry by connector name, so
+# both live here side by side; whichever connector is actually present wins,
+# the other entry is simply ignored (see docs in
+# /etc/driftwm/config.reference.toml around [[outputs]]). Kept in sync by
+# ~/.config/driftwm/scripts/set_output_mode.py, which the mod+s Display
+# settings UI calls instead of hand-editing this.
 [[outputs]]
-name = "DP-1"
-mode = "1920x1080@165"  # частота обновления — подставьте герцовку своего монитора
+name = "DP-1"           # desktop: external KTC AF24H1
+mode = "1920x1080@165"
 scale = 1.0
+
+[[outputs]]
+name = "eDP-1"          # laptop: internal Lenovo LEN140WQ+ panel
+mode = "2880x1800@120"
+scale = 1.5
+
 [env]
 # No GTK_THEME override here on purpose — it beats gsettings and
 # gtk-3.0/settings.ini's gtk-theme-name=Breeze outright, which is exactly

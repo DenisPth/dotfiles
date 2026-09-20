@@ -3,11 +3,11 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 
-// Two independent blocks: dotfiles git status (read-only — never pulls or
-// pushes, this repo is local-only, see its README) and Arch package
-// updates. The package block only checks — the actual upgrade needs a
-// password, so "обновить" just opens a terminal with the right command
-// rather than trying to run sudo from inside quickshell.
+// Two independent blocks: dotfiles git status (synced via GitHub across
+// machines now — see .zshrc's `dotfiles` command and update.sh) and Arch
+// package updates. The package block only checks — the actual upgrade
+// needs a password, so "обновить" just opens a terminal with the right
+// command rather than trying to run sudo from inside quickshell.
 ColumnLayout {
     id: root
     spacing: 6
@@ -83,7 +83,7 @@ ColumnLayout {
         }
 
         FlatButton {
-            text: root.pulling ? "тяну…" : "подтянуть (git pull)"
+            text: root.pulling ? "обновляю…" : "обновить (dotfiles update)"
             visible: root.canPull
             onClicked: {
                 root.pulling = true
@@ -94,10 +94,12 @@ ColumnLayout {
 
     Process {
         id: pull
-        // --ff-only: applies only when it's a clean fast-forward (canPull
-        // already guarantees that) — never merges, never touches local
-        // commits, so there's nothing here that could clash with edits.
-        command: ["git", "-C", root.repo, "pull", "--ff-only"]
+        // update.sh itself does `git pull --ff-only` (applies only on a
+        // clean fast-forward — canPull already guarantees that, never
+        // merges or touches local commits) and then relinks configs, so
+        // this is the same thing the mod+s button and a shell's `dotfiles
+        // update` both end up running.
+        command: [root.repo + "/update.sh"]
         onExited: {
             root.pulling = false
             root.check()

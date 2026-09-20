@@ -1,10 +1,12 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import Quickshell.Io
 
-// Single-monitor rice (see kanshi/config): wlr-randr sets the mode live,
-// then kanshi's config is rewritten to the same mode so it survives a
-// reconnect, and kanshi is told to reload.
+// wlr-randr sets the mode live, then set_output_mode.py writes the same
+// mode into config.toml's [[outputs]] (matched by connector name) so it
+// survives a driftwm restart — config.toml is the only place output modes
+// are persisted (see the [[outputs]] comment in config.toml).
 ColumnLayout {
     id: root
     spacing: 6
@@ -15,6 +17,7 @@ ColumnLayout {
     property string output: ""
     property var modes: []
     property string current: ""
+    readonly property string setModeScript: Quickshell.env("HOME") + "/.config/driftwm/scripts/set_output_mode.py"
 
     Component.onCompleted: if (visible) query.running = true
     onVisibleChanged: if (visible) query.running = true
@@ -47,11 +50,11 @@ ColumnLayout {
     }
 
     function apply(m) {
-        setter.command = ["wlr-randr", "--output", root.output, "--mode", `${m.width}x${m.height}@${m.refresh}Hz`]
+        const mode = `${m.width}x${m.height}@${Math.round(m.refresh)}`
+        setter.command = ["wlr-randr", "--output", root.output, "--mode", `${mode}Hz`]
         setter.running = true
-        kanshiRewrite.command = ["sh", "-c",
-            `sed -i 's/mode [0-9x@.]*/mode ${m.width}x${m.height}@${Math.round(m.refresh)}/' ~/.config/kanshi/config && kanshictl reload`]
-        kanshiRewrite.running = true
+        configWriter.command = [root.setModeScript, root.output, mode]
+        configWriter.running = true
     }
 
     Process {
@@ -63,7 +66,7 @@ ColumnLayout {
     }
 
     Process { id: setter }
-    Process { id: kanshiRewrite }
+    Process { id: configWriter }
 
     Text {
         text: "разрешение и частота обновления"
